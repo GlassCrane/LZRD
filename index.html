@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <title>LZRD INTHEKITCHEN — Orlando</title>
+  <meta name="description" content="LZRD INTHEKITCHEN — psychedelic art, tattoo culture, and fresh fits out of Orlando, FL. Limited drops. No restocks." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="logo.png" />
+</head>
+<body>
+
+  <!-- ===== FILM GRAIN OVERLAY ===== -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- ===== CUSTOM CURSOR ===== -->
+  <div class="cursor" aria-hidden="true"></div>
+  <div class="cursor-dot" aria-hidden="true"></div>
+
+  <!-- ===== LIZARD WATERMARK + LIVE EYE ===== -->
+  <div class="lizardwrap">
+    <img class="lizard__img" src="lzrd.png" alt="LZRD gecko" />
+    <!-- live eye seated over the gecko's socket (position tuned via --ex / --ey) -->
+    <a href="#top" class="lizard__eyelink" aria-label="LZRD INTHEKITCHEN home">
+      <svg class="eye" viewBox="0 0 100 100" role="img" aria-hidden="true">
+        <defs>
+          <radialGradient id="irisGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#c6ff00" />
+            <stop offset="42%" stop-color="#00e5ff" />
+            <stop offset="78%" stop-color="#7b2dff" />
+            <stop offset="100%" stop-color="#ff2d95" />
+          </radialGradient>
+          <clipPath id="eyeClip"><circle cx="50" cy="50" r="46" /></clipPath>
+        </defs>
+        <circle class="eye__sclera" cx="50" cy="50" r="46" />
+        <g clip-path="url(#eyeClip)">
+          <g class="eye__ball" id="eyeball">
+            <circle class="eye__iris" cx="50" cy="50" r="22" />
+            <circle class="eye__pupil" cx="50" cy="50" r="10" />
+            <circle class="eye__glint" cx="43" cy="43" r="4.5" />
+          </g>
+          <rect class="eye__lid" id="eyelid" x="0" y="-100" width="100" height="100" />
+        </g>
+        <circle class="eye__rim" cx="50" cy="50" r="46" />
+      </svg>
+    </a>
+  </div>
+
+  <!-- ===== PRELOADER ===== -->
+  <div class="preloader" id="preloader">
+    <div class="preloader__inner">
+      <img src="logo.png" alt="LZRD INTHEKITCHEN" class="preloader__logo" />
+      <div class="preloader__bar"><span class="preloader__fill"></span></div>
+      <div class="preloader__count"><span id="count">0</span><em>%</em></div>
+    </div>
+    <div class="preloader__curtain"></div>
+  </div>
+
+  <!-- ===== NAV ===== -->
+  <header class="nav" id="nav">
+    <span class="nav__spacer" aria-hidden="true"></span>
+    <nav class="nav__links">
+      <a href="#drop" data-link>Drop</a>
+      <a href="#manifesto" data-link>Manifesto</a>
+      <a href="#lookbook" data-link>Lookbook</a>
+      <a href="#waitlist" data-link>Waitlist</a>
+    </nav>
+    <a href="#waitlist" class="nav__cta magnetic" data-link>
+      <span>Get On The List</span>
+    </a>
+    <button class="nav__burger" id="burger" aria-label="Menu"><span></span><span></span></button>
+  </header>
+
+  <!-- ===== MOBILE MENU ===== -->
+  <div class="menu" id="menu">
+    <a href="#drop" data-link>Drop</a>
+    <a href="#manifesto" data-link>Manifesto</a>
+    <a href="#lookbook" data-link>Lookbook</a>
+    <a href="#waitlist" data-link>Waitlist</a>
+  </div>
+
+  <main id="top">
+
+    <!-- ===== HERO ===== -->
+    <section class="hero" id="hero">
+      <div class="hero__blob" aria-hidden="true">
+        <div class="blob blob--1"></div>
+        <div class="blob blob--2"></div>
+        <div class="blob blob--3"></div>
+      </div>
+
+      <div class="hero__meta">
+        <span class="tag">Est. Orlando, FL</span>
+        <span class="tag">28.5&deg;N / 81.3&deg;W</span>
+      </div>
+
+      <h1 class="hero__title" aria-label="LZRD INTHEKITCHEN">
+        <img src="logo.png" alt="LZRD INTHEKITCHEN" class="hero__logo" />
+      </h1>
+
+      <div class="hero__sub">
+        <p data-fade>Psychedelic art. Tattoo culture. Wearable chaos, cooked fresh out of Central Florida. Limited drops — <strong>no restocks.</strong></p>
+        <a href="#drop" class="btn magnetic" data-fade><span>See The Drop</span></a>
+      </div>
+
+      <div class="hero__scroll" data-fade>
+        <span>Scroll</span>
+        <i></i>
+      </div>
+    </section>
+
+    <!-- ===== MARQUEE ===== -->
+    <section class="marquee" aria-hidden="true">
+      <div class="marquee__track" id="marquee">
+        <span>Limited Drops <b>&#10022;</b> No Restocks <b>&#10022;</b> Cooked In Orlando <b>&#10022;</b> Psychedelic Threads <b>&#10022;</b> Tattoo Culture <b>&#10022;</b> Stay Fresh <b>&#10022;</b> </span>
+        <span>Limited Drops <b>&#10022;</b> No Restocks <b>&#10022;</b> Cooked In Orlando <b>&#10022;</b> Psychedelic Threads <b>&#10022;</b> Tattoo Culture <b>&#10022;</b> Stay Fresh <b>&#10022;</b> </span>
+      </div>
+    </section>
+
+    <!-- ===== DROP (horizontal pinned) ===== -->
+    <section class="drop" id="drop">
+      <div class="drop__pin" id="dropPin">
+        <div class="drop__panels" id="dropPanels">
+
+          <article class="panel panel--intro">
+            <span class="panel__idx">Drop 001</span>
+            <h2>The<br>Acid<br>Cookbook</h2>
+            <p>Six pieces. Screen-printed by hand. Each one a bad trip you can wear in public.</p>
+          </article>
+
+          <article class="panel" style="--c1:#c6ff00;--c2:#ff2d95;">
+            <div class="panel__art"><span class="panel__glyph">01</span></div>
+            <div class="panel__info">
+              <h3>Melt Season Tee</h3>
+              <p>Heavyweight boxy tee. Liquid-print graphic.</p>
+              <span class="panel__price">$68</span>
+            </div>
+          </article>
+
+          <article class="panel" style="--c1:#00e5ff;--c2:#7b2dff;">
+            <div class="panel__art"><span class="panel__glyph">02</span></div>
+            <div class="panel__info">
+              <h3>Third Eye Hoodie</h3>
+              <p>400gsm fleece. Puff-print backpiece.</p>
+              <span class="panel__price">$140</span>
+            </div>
+          </article>
+
+          <article class="panel" style="--c1:#ff6a00;--c2:#ff2d95;">
+            <div class="panel__art"><span class="panel__glyph">03</span></div>
+            <div class="panel__info">
+              <h3>Flash Sheet Work Jacket</h3>
+              <p>Waxed canvas. Tattoo-flash embroidery.</p>
+              <span class="panel__price">$210</span>
+            </div>
+          </article>
+
+          <article class="panel" style="--c1:#c6ff00;--c2:#00e5ff;">
+            <div class="panel__art"><span class="panel__glyph">04</span></div>
+            <div class="panel__info">
+              <h3>Fever Dream Cap</h3>
+              <p>Structured 6-panel. Warped chain-stitch.</p>
+              <span class="panel__price">$48</span>
+            </div>
+          </article>
+
+          <article class="panel panel--cta" style="--c1:#ff2d95;--c2:#7b2dff;">
+            <h3>Full drop lands<br>soon.</h3>
+            <a href="#waitlist" class="btn btn--dark magnetic" data-link><span>Claim Early Access</span></a>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== MANIFESTO ===== -->
+    <section class="manifesto" id="manifesto">
+      <p class="manifesto__text">
+        <span data-word>We</span> <span data-word>don't</span> <span data-word>make</span> <span data-word>clothes.</span>
+        <span data-word>We</span> <span data-word>cook</span> <span data-word>artifacts</span> <span data-word>—</span>
+        <span data-word>born</span> <span data-word>from</span> <span data-word>ink,</span>
+        <span data-word>acid</span> <span data-word>color,</span> <span data-word>and</span>
+        <span data-word>the</span> <span data-word>swamp</span> <span data-word>heat</span>
+        <span data-word>of</span> <span data-word>Orlando.</span>
+        <span data-word>Wear</span> <span data-word>it</span> <span data-word>loud</span>
+        <span data-word>or</span> <span data-word>don't</span> <span data-word>wear</span> <span data-word>it</span> <span data-word>at</span> <span data-word>all.</span>
+      </p>
+    </section>
+
+    <!-- ===== LOOKBOOK (parallax grid) ===== -->
+    <section class="lookbook" id="lookbook">
+      <div class="lookbook__head">
+        <h2 data-fade>Look<span>book</span></h2>
+        <p data-fade>SS26 &mdash; shot on the streets of Downtown Orlando.</p>
+      </div>
+      <div class="lookbook__grid">
+        <figure class="shot" data-speed="1.15" style="--c1:#c6ff00;--c2:#ff2d95;"><span>OrlandoNights</span></figure>
+        <figure class="shot" data-speed="0.85" style="--c1:#00e5ff;--c2:#7b2dff;"><span>SwampGothic</span></figure>
+        <figure class="shot" data-speed="1.25" style="--c1:#ff6a00;--c2:#c6ff00;"><span>NeonMirage</span></figure>
+        <figure class="shot" data-speed="0.9" style="--c1:#7b2dff;--c2:#00e5ff;"><span>FeverPitch</span></figure>
+        <figure class="shot" data-speed="1.1" style="--c1:#ff2d95;--c2:#ff6a00;"><span>InkedUp</span></figure>
+        <figure class="shot" data-speed="0.8" style="--c1:#00e5ff;--c2:#c6ff00;"><span>AfterHours</span></figure>
+      </div>
+    </section>
+
+    <!-- ===== WAITLIST ===== -->
+    <section class="waitlist" id="waitlist">
+      <div class="waitlist__inner">
+        <span class="tag" data-fade>Drop 001 &mdash; incoming</span>
+        <h2 data-fade>Don't miss<br>the cook.</h2>
+        <p data-fade>Drops are small and they don't come back. Get on the list for first access, secret passwords, and studio scraps.</p>
+        <form class="waitlist__form" id="waitForm" data-fade>
+          <input type="email" placeholder="your@email.com" required aria-label="Email address" />
+          <button type="submit" class="magnetic"><span>Notify Me</span></button>
+        </form>
+        <p class="waitlist__note" id="waitNote">No spam. Just heat.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <img src="logo.png" alt="LZRD INTHEKITCHEN" class="footer__logo" id="footerLogo" />
+    <div class="footer__cols">
+      <div>
+        <h4>Shop</h4>
+        <a href="#drop" data-link>Latest Drop</a>
+        <a href="#waitlist" data-link>Waitlist</a>
+        <a href="#lookbook" data-link>Lookbook</a>
+      </div>
+      <div>
+        <h4>Follow</h4>
+        <a href="#" target="_blank" rel="noopener">Instagram</a>
+        <a href="#" target="_blank" rel="noopener">TikTok</a>
+        <a href="#" target="_blank" rel="noopener">Discord</a>
+      </div>
+      <div>
+        <h4>HQ</h4>
+        <a href="#">Orlando, FL</a>
+        <a href="mailto:hello@lzrdinthekitchen.com">hello@lzrdinthekitchen.com</a>
+      </div>
+    </div>
+    <div class="footer__base">
+      <span>&copy; <span id="year"></span> LZRD INTHEKITCHEN</span>
+      <span>Cooked in Central Florida &#9832;</span>
+    </div>
+  </footer>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script src="js/vendor/gsap.min.js"></script>
+  <script src="js/vendor/ScrollTrigger.min.js"></script>
+  <script src="js/vendor/ScrollToPlugin.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
