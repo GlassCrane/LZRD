@@ -20,7 +20,7 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Build APKs
+      - name: Test and build APKs
         working-directory: flannery-app
         run: ./gradlew assembleDebug assembleRelease --no-daemon --stacktrace
 

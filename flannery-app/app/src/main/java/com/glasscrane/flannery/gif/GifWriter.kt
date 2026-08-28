@@ -124,7 +124,11 @@ class GifWriter(
                 if (nextCode < 4096) {
                     dict[key] = nextCode
                     nextCode++
-                    if (nextCode == (1 shl codeSize) && codeSize < 12) codeSize++
+                    // The decoder only starts adding entries from the second code
+                    // on, so its table is always one behind ours. Widen a code
+                    // later than our own table crossing the boundary, or every
+                    // code past 512 is read at the wrong width.
+                    if (nextCode > (1 shl codeSize) && codeSize < 12) codeSize++
                 } else {
                     emit(clearCode)
                     dict.clear()
