@@ -44,30 +44,29 @@ fun withAlpha(color: Int, a: Float): Int {
 }
 
 object Hue {
-    // Soft sage plush with cream belly and a drawn dark-green line.
-    val BODY = 0xFFB4D1A2.toInt()
-    val BODY_DEEP = 0xFF9BBE88.toInt()
-    val BODY_LIGHT = 0xFFC9E0BA.toInt()
-    val LINE = 0xFF6C8D5A.toInt()
-    val FIN = 0xFFA8CB95.toInt()
-    val FIN_LINE = 0xFF5C7D4C.toInt()
-    val BELLY = 0xFFEDE5C9.toInt()
-    val BELLY_SHADE = 0xFFDCD2B0.toInt()
-    val BELLY_LINE = 0xFFB3A987.toInt()
-    val INK = 0xFF3A2F28.toInt()
+    // Sampled from the reference drawing.
+    val BODY = 0xFFB0CE9C.toInt()
+    val BODY_LIGHT = 0xFFC8DEB8.toInt()
+    val BODY_DEEP = 0xFF97BA82.toInt()
+    val LINE = 0xFF5E7F4F.toInt()
+    val FIN = 0xFFA2C48D.toInt()
+    val FIN_LINE = 0xFF55764A.toInt()
+    val BELLY = 0xFFE9E0C4.toInt()
+    val BELLY_SHADE = 0xFFDACFAE.toInt()
+    val BELLY_LINE = 0xFFA99878.toInt()
+    val INK = 0xFF37302A.toInt()
     val WHITE = 0xFFFFFFFF.toInt()
-    val PINK = 0xFFE08095.toInt()
-    val GOLD = 0xFFEDBE55.toInt()
-    val SHADOW = 0xFF9AA891.toInt()
+    val PINK = 0xFFDE7C90.toInt()
+    val GOLD = 0xFFEBBB52.toInt()
+    val SHADOW = 0xFF97A78E.toInt()
     val CREAM = 0xFFFFF8F2.toInt()
 
-    // kept so props and backgrounds keep compiling
     val MINT = BODY
     val MINT_DEEP = BODY_DEEP
     val MINT_LIGHT = BODY_LIGHT
     val FRILL = FIN
     val FRILL_EDGE = FIN_LINE
-    val BLUSH = 0xFFE0A9A2.toInt()
+    val BLUSH = 0xFFDCA69E.toInt()
 }
 
 enum class Eyes { OPEN, BLINK, HAPPY, SLEEPY, WIDE, HEART, STAR, DIZZY }
@@ -133,18 +132,39 @@ class Stage(var canvas: Canvas, var w: Float, var h: Float) {
 
 object Flannery {
 
-    // Round, a touch taller than wide.
-    private const val H_RATIO = 0.510f
+    /** Taller than wide, like the drawing. */
+    private const val H_RATIO = 0.550f
+
+    /**
+     * His outline, parametrically: an egg with the fat end down — narrower
+     * across the top dome, widest below the middle. Sampling it (rather than
+     * using a plain ellipse) lets the fur and the silhouette share one shape.
+     */
+    private fun outlineX(t: Float, hw: Float) = hw * cos(t) * (1f + 0.10f * sin(t))
+    private fun outlineY(t: Float, hh: Float) = hh * sin(t)
+
+    private fun bodyPath(st: Stage, hw: Float, hh: Float) {
+        val p = st.path
+        p.reset()
+        val steps = 96
+        for (i in 0 until steps) {
+            val t = i / steps.toFloat() * TAU
+            val x = outlineX(t, hw)
+            val y = outlineY(t, hh)
+            if (i == 0) p.moveTo(x, y) else p.lineTo(x, y)
+        }
+        p.close()
+    }
 
     fun draw(st: Stage, p: Pose) {
         val c = st.canvas
         val hw = p.size * 0.5f
         val hh = p.size * H_RATIO
-        val line = p.size * 0.011f
+        val line = p.size * 0.0075f
 
         if (p.shadow > 0.01f) {
-            st.oval(p.cx, p.cy + hh * 1.10f, hw * 0.76f * p.sx, hh * 0.10f,
-                withAlpha(Hue.SHADOW, 0.20f * p.shadow))
+            st.oval(p.cx, p.cy + hh * 1.06f, hw * 0.80f * p.sx, hh * 0.09f,
+                withAlpha(Hue.SHADOW, 0.22f * p.shadow))
         }
 
         c.save()
@@ -153,32 +173,35 @@ object Flannery {
         if (p.sx != 1f || p.sy != 1f) c.scale(p.sx, p.sy)
 
         drawFins(st, hw, hh, line)
-        drawFuzz(st, hw, hh)
+        drawFur(st, hw, hh)
 
-        // Body
-        st.oval(0f, 0f, hw, hh, Hue.BODY)
-
-        st.path.reset()
-        st.rect.set(-hw, -hh, hw, hh)
-        st.path.addOval(st.rect, Path.Direction.CW)
+        bodyPath(st, hw, hh)
+        c.drawPath(st.path, st.fill(Hue.BODY))
 
         c.save()
+        bodyPath(st, hw, hh)
         c.clipPath(st.path)
-        // gentle shading: lighter up top, deeper toward the base
-        for (k in 0 until 10) {
-            val f = k / 9f
-            st.oval(-hw * 0.06f, -hh * (0.62f - 0.16f * f), hw * (0.40f + 0.34f * f),
-                hh * (0.22f + 0.28f * f), withAlpha(Hue.BODY_LIGHT, 0.045f))
+        // light gathering on the upper dome, weight settling low
+        for (k in 0 until 12) {
+            val f = k / 11f
+            st.oval(-hw * 0.12f, -hh * (0.52f - 0.14f * f), hw * (0.34f + 0.36f * f),
+                hh * (0.20f + 0.26f * f), withAlpha(Hue.BODY_LIGHT, 0.055f))
         }
-        st.oval(0f, hh * 0.98f, hw * 0.74f, hh * 0.26f, withAlpha(Hue.BODY_DEEP, 0.28f))
+        for (k in 0 until 8) {
+            val f = k / 7f
+            st.oval(0f, hh * (1.04f + 0.06f * f), hw * (0.86f - 0.10f * f), hh * 0.30f,
+                withAlpha(Hue.BODY_DEEP, 0.05f))
+        }
         c.restore()
 
-        // Silhouette line
-        st.rect.set(-hw, -hh, hw, hh)
-        c.drawOval(st.rect, st.stroke(withAlpha(Hue.LINE, 0.70f), line))
+        bodyPath(st, hw, hh)
+        c.drawPath(st.path, st.stroke(withAlpha(Hue.LINE, 0.60f), line))
 
+        c.save()
+        bodyPath(st, hw, hh)
+        c.clipPath(st.path)
         drawBelly(st, hw, hh, line)
-
+        c.restore()
         drawEyes(st, p, hw, hh)
         drawMouth(st, p, hw, hh)
 
@@ -188,142 +211,143 @@ object Flannery {
     }
 
     /**
-     * The crest: a run of overlapping leaf-shaped lobes down each side of the
-     * head, tips sweeping upward, largest at the top — the way they sit on him.
+     * A leafy fin fan on each side at eye level: four rounded lobes radiating
+     * from one attachment point, outlined, sitting behind the body.
      */
     private fun drawFins(st: Stage, hw: Float, hh: Float, line: Float) {
         val c = st.canvas
-        for (side in intArrayOf(-1, 1)) {
-            for (i in 0 until 6) {
-                val f = i / 5f
-                val aDeg = lerp(-56f, 24f, f)
-                val a = aDeg * DEG
-                val bulk = 1.06f - 0.34f * f
-                val len = hw * 0.205f * bulk
-                val wid = hw * 0.150f * bulk
-                val px = cos(a) * side * hw * 0.90f
-                val py = sin(a) * hh * 0.90f
-                val tilt = 18f
+        val baseDeg = -28f
+        val rel = floatArrayOf(-44f, -15f, 14f, 42f)
+        val lens = floatArrayOf(0.215f, 0.290f, 0.278f, 0.205f)
+        val wids = floatArrayOf(0.132f, 0.158f, 0.153f, 0.126f)
 
+        for (side in intArrayOf(-1, 1)) {
+            val t = baseDeg * DEG
+            val bx = outlineX(t, hw) * side * 0.94f
+            val by = outlineY(t, hh) * 0.94f
+            for (i in rel.indices) {
+                val len = hw * lens[i]
+                val wid = hw * wids[i]
+                val ang = baseDeg + rel[i]
                 c.save()
-                c.translate(px, py)
-                c.rotate(if (side > 0) aDeg - tilt else 180f - aDeg + tilt)
-                c.translate(len * 0.55f, 0f)
+                c.translate(bx, by)
+                c.rotate(if (side > 0) ang else 180f - ang)
+                c.translate(len * 0.44f, 0f)
                 leafPath(st, len, wid)
                 c.drawPath(st.path, st.fill(Hue.FIN))
-                c.drawPath(st.path, st.stroke(withAlpha(Hue.FIN_LINE, 0.85f), line))
+                c.drawPath(st.path, st.stroke(withAlpha(Hue.FIN_LINE, 0.80f), line))
                 c.restore()
             }
         }
     }
 
-    /** Rounded lobe with a soft point — a leafy fin. */
+    /** Rounded lobe with a soft point. */
     private fun leafPath(st: Stage, len: Float, wid: Float) {
         val p = st.path
         p.reset()
-        p.moveTo(-len * 0.86f, -wid * 0.66f)
-        p.quadTo(len * 0.26f, -wid * 1.02f, len * 0.88f, -wid * 0.32f)
-        p.quadTo(len * 1.16f, 0f, len * 0.88f, wid * 0.32f)
-        p.quadTo(len * 0.26f, wid * 1.02f, -len * 0.86f, wid * 0.66f)
-        p.quadTo(-len * 1.12f, 0f, -len * 0.86f, -wid * 0.66f)
+        p.moveTo(-len * 0.88f, -wid * 0.64f)
+        p.quadTo(len * 0.24f, -wid * 1.02f, len * 0.88f, -wid * 0.30f)
+        p.quadTo(len * 1.16f, 0f, len * 0.88f, wid * 0.30f)
+        p.quadTo(len * 0.24f, wid * 1.02f, -len * 0.88f, wid * 0.64f)
+        p.quadTo(-len * 1.14f, 0f, -len * 0.88f, -wid * 0.64f)
         p.close()
     }
 
-    /** Cream belly patch, inset from the edges, with a shaggy rim. */
+    /** Shaggy pile following the same outline the body uses. */
+    private fun drawFur(st: Stage, hw: Float, hh: Float) {
+        val pt = st.stroke(Hue.BODY_LIGHT, hw * 0.021f)
+        val n = 380
+        for (i in 0 until n) {
+            val t = i / n.toFloat() * TAU + (rnd(i) - 0.5f) * 0.03f
+            val x = outlineX(t, hw)
+            val y = outlineY(t, hh)
+            val d = kotlin.math.sqrt(x * x + y * y)
+            if (d <= 0f) continue
+            val nx = x / d
+            val ny = y / d
+            val lean = (rnd(i * 5) - 0.5f) * 0.7f
+            val ox = nx * cos(lean) - ny * sin(lean)
+            val oy = nx * sin(lean) + ny * cos(lean)
+            val clump = 0.42f + 0.58f * (0.5f + 0.5f * sin(t * 9f))
+            val len = hw * (0.008f + 0.024f * clump * (0.45f + 0.55f * rnd(i * 3)))
+            pt.color = withAlpha(if (rnd(i * 11) > 0.45f) Hue.BODY_LIGHT else Hue.BODY, 0.9f)
+            st.canvas.drawLine(x * 0.97f, y * 0.97f, x + ox * len, y + oy * len, pt)
+        }
+    }
+
+    /** The big cream belly: a tall oval low on the body, with a furry rim. */
     private fun drawBelly(st: Stage, hw: Float, hh: Float, line: Float) {
-        val cy = hh * 0.40f
+        val cy = hh * 0.52f
         val rx = hw * 0.70f
-        val ry = hh * 0.52f
+        val ry = hh * 0.50f
 
         st.oval(0f, cy, rx, ry, Hue.BELLY)
-        st.oval(0f, cy + hh * 0.16f, rx * 0.92f, ry * 0.80f, withAlpha(Hue.BELLY_SHADE, 0.40f))
-        st.oval(0f, cy - hh * 0.02f, rx * 0.96f, ry * 0.94f, Hue.BELLY)
+        st.oval(0f, cy + hh * 0.18f, rx * 0.92f, ry * 0.82f, withAlpha(Hue.BELLY_SHADE, 0.35f))
+        st.oval(0f, cy - hh * 0.03f, rx * 0.96f, ry * 0.95f, Hue.BELLY)
 
-        // fur rim: short strokes all the way round the patch
-        val pt = st.stroke(withAlpha(Hue.BELLY, 0.7f), hw * 0.016f)
-        for (i in 0 until 130) {
-            val a = i / 130f * TAU + (rnd(i) - 0.5f) * 0.06f
-            val lean = (rnd(i * 5) - 0.5f) * 0.6f
+        val pt = st.stroke(withAlpha(Hue.BELLY, 0.85f), hw * 0.014f)
+        for (i in 0 until 150) {
+            val a = i / 150f * TAU + (rnd(i) - 0.5f) * 0.05f
             val ca = cos(a)
             val sa = sin(a)
-            val start = 0.955f + 0.035f * rnd(i * 13)
-            val len = hw * (0.014f + 0.026f * rnd(i * 7))
+            val lean = (rnd(i * 5) - 0.5f) * 0.7f
+            val len = hw * (0.008f + 0.018f * rnd(i * 7))
             pt.color = withAlpha(if (sa > 0.3f) Hue.BELLY_SHADE else Hue.BELLY, 0.88f)
             st.canvas.drawLine(
-                ca * rx * start, cy + sa * ry * start,
-                ca * rx * start + cos(a + lean) * len, cy + sa * ry * start + sin(a + lean) * len, pt
+                ca * rx * 0.98f, cy + sa * ry * 0.98f,
+                ca * rx + cos(a + lean) * len, cy + sa * ry + sin(a + lean) * len, pt
             )
         }
         st.rect.set(-rx, cy - ry, rx, cy + ry)
-        st.canvas.drawOval(st.rect, st.stroke(withAlpha(Hue.BELLY_LINE, 0.30f), line * 0.7f))
-    }
-
-    /** Shaggy pile around the silhouette — irregular, so it reads as fur not stitching. */
-    private fun drawFuzz(st: Stage, hw: Float, hh: Float) {
-        val pt = st.stroke(Hue.BODY_LIGHT, hw * 0.017f)
-        for (i in 0 until 300) {
-            val a = i / 300f * TAU + (rnd(i) - 0.5f) * 0.045f
-            val lean = (rnd(i * 5) - 0.5f) * 0.55f
-            val ca = cos(a)
-            val sa = sin(a)
-            val start = 0.955f + 0.030f * rnd(i * 13)
-            val len = hw * (0.020f + 0.032f * rnd(i * 3))
-            val ox = cos(a + lean)
-            val oy = sin(a + lean)
-            pt.color = withAlpha(if (rnd(i * 11) > 0.5f) Hue.BODY_LIGHT else Hue.BODY, 0.9f)
-            st.canvas.drawLine(
-                ca * hw * start, sa * hh * start,
-                ca * hw * start + ox * len, sa * hh * start + oy * len, pt
-            )
-        }
+        st.canvas.drawOval(st.rect, st.stroke(withAlpha(Hue.BELLY_LINE, 0.40f), line * 0.85f))
     }
 
     private fun drawEyes(st: Stage, p: Pose, hw: Float, hh: Float) {
-        val ex = hw * 0.415f
-        val ey = -hh * 0.30f
-        val r = hw * 0.108f
-        val gx = p.gazeX * r * 0.30f
-        val gy = p.gazeY * r * 0.30f
+        val ex = hw * 0.375f
+        val ey = -hh * 0.46f
+        val r = hw * 0.082f
+        val gx = p.gazeX * r * 0.34f
+        val gy = p.gazeY * r * 0.34f
 
         for (side in intArrayOf(-1, 1)) {
             val x = side * ex + gx
             val y = ey + gy
             when (p.eyes) {
-                // flat matte pupils, no highlight — as drawn
+                // flat, matte, no highlight — as drawn
                 Eyes.OPEN, Eyes.WIDE -> {
-                    val rr = if (p.eyes == Eyes.WIDE) r * 1.24f else r
-                    st.oval(x, y, rr * 0.92f, rr, Hue.INK)
+                    val rr = if (p.eyes == Eyes.WIDE) r * 1.28f else r
+                    st.oval(x, y, rr * 0.90f, rr * 1.06f, Hue.INK)
                 }
                 Eyes.BLINK -> {
                     st.path.reset()
-                    st.path.moveTo(x - r * 1.05f, y - r * 0.10f)
-                    st.path.quadTo(x, y + r * 0.52f, x + r * 1.05f, y - r * 0.10f)
-                    st.canvas.drawPath(st.path, st.stroke(Hue.INK, r * 0.34f))
+                    st.path.moveTo(x - r * 1.15f, y - r * 0.12f)
+                    st.path.quadTo(x, y + r * 0.58f, x + r * 1.15f, y - r * 0.12f)
+                    st.canvas.drawPath(st.path, st.stroke(Hue.INK, r * 0.40f))
                 }
                 Eyes.HAPPY -> {
                     st.path.reset()
-                    st.path.moveTo(x - r * 1.05f, y + r * 0.34f)
-                    st.path.quadTo(x, y - r * 0.80f, x + r * 1.05f, y + r * 0.34f)
-                    st.canvas.drawPath(st.path, st.stroke(Hue.INK, r * 0.34f))
+                    st.path.moveTo(x - r * 1.15f, y + r * 0.38f)
+                    st.path.quadTo(x, y - r * 0.86f, x + r * 1.15f, y + r * 0.38f)
+                    st.canvas.drawPath(st.path, st.stroke(Hue.INK, r * 0.40f))
                 }
                 Eyes.SLEEPY -> {
                     st.path.reset()
-                    st.path.moveTo(x - r * 1.05f, y)
-                    st.path.quadTo(x, y + r * 0.70f, x + r * 1.05f, y)
-                    st.canvas.drawPath(st.path, st.stroke(Hue.INK, r * 0.32f))
+                    st.path.moveTo(x - r * 1.15f, y)
+                    st.path.quadTo(x, y + r * 0.76f, x + r * 1.15f, y)
+                    st.canvas.drawPath(st.path, st.stroke(Hue.INK, r * 0.38f))
                 }
-                Eyes.HEART -> Props.heart(st, x, y, r * 1.40f, Hue.PINK)
-                Eyes.STAR -> Props.star(st, x, y, r * 1.36f, Hue.GOLD)
+                Eyes.HEART -> Props.heart(st, x, y, r * 1.70f, Hue.PINK)
+                Eyes.STAR -> Props.star(st, x, y, r * 1.65f, Hue.GOLD)
                 Eyes.DIZZY -> {
-                    val pt = st.stroke(Hue.INK, r * 0.24f)
+                    val pt = st.stroke(Hue.INK, r * 0.28f)
                     st.path.reset()
                     var a = 0f
-                    var rad = r * 0.12f
+                    var rad = r * 0.14f
                     st.path.moveTo(x, y)
                     while (a < TAU * 1.6f) {
                         st.path.lineTo(x + cos(a) * rad, y + sin(a) * rad)
                         a += 0.35f
-                        rad += r * 0.058f
+                        rad += r * 0.070f
                     }
                     st.canvas.drawPath(st.path, pt)
                 }
@@ -332,55 +356,55 @@ object Flannery {
     }
 
     private fun drawMouth(st: Stage, p: Pose, hw: Float, hh: Float) {
-        val my = -hh * 0.16f
-        val m = hw * 0.185f
-        val w = hw * 0.030f
+        val my = -hh * 0.30f
+        val m = hw * 0.160f
+        val w = hw * 0.026f
         when (p.mouth) {
-            // wide, flat, hand-drawn wave
+            // wide, flat, gently wavy — the line from the drawing
             Mouth.SQUIGGLE -> {
                 st.path.reset()
-                st.path.moveTo(-m, my - m * 0.02f)
-                st.path.quadTo(-m * 0.50f, my + m * 0.40f, 0f, my + m * 0.10f)
-                st.path.quadTo(m * 0.50f, my - m * 0.24f, m, my + m * 0.20f)
+                st.path.moveTo(-m, my - m * 0.10f)
+                st.path.quadTo(-m * 0.48f, my + m * 0.34f, 0f, my + m * 0.10f)
+                st.path.quadTo(m * 0.48f, my - m * 0.16f, m, my + m * 0.22f)
                 st.canvas.drawPath(st.path, st.stroke(Hue.INK, w))
             }
             Mouth.SMILE -> {
                 st.path.reset()
                 st.path.moveTo(-m, my - m * 0.06f)
-                st.path.quadTo(0f, my + m * 0.62f, m, my - m * 0.06f)
+                st.path.quadTo(0f, my + m * 0.60f, m, my - m * 0.06f)
                 st.canvas.drawPath(st.path, st.stroke(Hue.INK, w))
             }
             Mouth.TINY -> {
                 st.path.reset()
-                st.path.moveTo(-m * 0.38f, my)
-                st.path.quadTo(0f, my + m * 0.30f, m * 0.38f, my)
+                st.path.moveTo(-m * 0.40f, my)
+                st.path.quadTo(0f, my + m * 0.30f, m * 0.40f, my)
                 st.canvas.drawPath(st.path, st.stroke(Hue.INK, w))
             }
             Mouth.FROWN -> {
                 st.path.reset()
-                st.path.moveTo(-m * 0.80f, my + m * 0.26f)
-                st.path.quadTo(0f, my - m * 0.36f, m * 0.80f, my + m * 0.26f)
+                st.path.moveTo(-m * 0.82f, my + m * 0.26f)
+                st.path.quadTo(0f, my - m * 0.36f, m * 0.82f, my + m * 0.26f)
                 st.canvas.drawPath(st.path, st.stroke(Hue.INK, w))
             }
             Mouth.OPEN -> {
-                st.oval(0f, my + m * 0.18f, m * 0.36f, m * 0.34f, Hue.INK)
-                st.oval(0f, my + m * 0.32f, m * 0.21f, m * 0.15f, Hue.PINK)
+                st.oval(0f, my + m * 0.20f, m * 0.34f, m * 0.32f, Hue.INK)
+                st.oval(0f, my + m * 0.32f, m * 0.20f, m * 0.14f, Hue.PINK)
             }
             Mouth.WIDE_OPEN -> {
-                st.oval(0f, my + m * 0.24f, m * 0.48f, m * 0.54f, Hue.INK)
-                st.oval(0f, my + m * 0.50f, m * 0.29f, m * 0.22f, Hue.PINK)
+                st.oval(0f, my + m * 0.26f, m * 0.46f, m * 0.52f, Hue.INK)
+                st.oval(0f, my + m * 0.50f, m * 0.28f, m * 0.21f, Hue.PINK)
             }
             Mouth.YAWN -> {
-                st.oval(0f, my + m * 0.40f, m * 0.42f, m * 0.80f, Hue.INK)
-                st.oval(0f, my + m * 0.82f, m * 0.26f, m * 0.28f, Hue.PINK)
+                st.oval(0f, my + m * 0.42f, m * 0.40f, m * 0.78f, Hue.INK)
+                st.oval(0f, my + m * 0.82f, m * 0.25f, m * 0.27f, Hue.PINK)
             }
             Mouth.BLEP -> {
                 st.path.reset()
                 st.path.moveTo(-m * 0.44f, my)
                 st.path.quadTo(0f, my + m * 0.28f, m * 0.44f, my)
                 st.canvas.drawPath(st.path, st.stroke(Hue.INK, w))
-                st.rect.set(-m * 0.20f, my + m * 0.06f, m * 0.20f, my + m * 0.58f)
-                st.canvas.drawRoundRect(st.rect, m * 0.20f, m * 0.20f, st.fill(Hue.PINK))
+                st.rect.set(-m * 0.19f, my + m * 0.06f, m * 0.19f, my + m * 0.56f)
+                st.canvas.drawRoundRect(st.rect, m * 0.19f, m * 0.19f, st.fill(Hue.PINK))
             }
         }
     }
