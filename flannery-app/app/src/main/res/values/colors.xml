@@ -1,0 +1,9 @@
+<resources>
+    <color name="cream">#FBF7EF</color>
+    <color name="cream_dim">#EBE4D6</color>
+    <color name="sage">#B4D1A2</color>
+    <color name="sage_deep">#5C7D4C</color>
+    <color name="ink">#3A2F28</color>
+    <color name="ink_soft">#8A8175</color>
+    <color name="card">#FFFFFF</color>
+</resources>

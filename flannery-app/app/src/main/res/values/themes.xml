@@ -1,0 +1,9 @@
+<resources>
+    <style name="Theme.Flannery" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:colorBackground">@color/cream</item>
+        <item name="android:statusBarColor">@color/cream</item>
+        <item name="android:navigationBarColor">@color/cream</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="colorAccent">@color/sage_deep</item>
+    </style>
+</resources>
