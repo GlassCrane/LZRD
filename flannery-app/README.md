@@ -5,11 +5,20 @@ being shared anywhere as a GIF.
 
 ## What's inside
 
-Flannery is drawn entirely in code — no image assets. `art/Art.kt` renders him
-from vector shapes given a `Pose` (position, squash, rotation, eye state, mouth
-state), so every animation is a short function that moves a pose around over a
-normalised time `t` in `[0,1)`. That keeps the APK tiny and every animation
-crisp at any size.
+Flannery himself is the artwork — his image, lifted off its background into an
+RGBA sprite (`res/drawable-nodpi/flannery.png`). Animations don't redraw him;
+they move, squash and rotate that sprite. `art/Art.kt` renders a `Pose`
+(position, scale, rotation, eye state, mouth state) and each animation is a
+short function moving a pose over normalised time `t` in `[0,1)`.
+
+Expressions are drawn *over* the artwork at face positions measured off the
+image — blinks, happy arcs, heart and star eyes, open mouths. Each one first
+hides the painted feature under a soft patch of the fur colour sampled from
+around it, so the overlay sits on him invisibly. His resting face is left
+untouched, which is why most animations look exactly like him.
+
+Props (hearts, confetti, snow, bubbles, the beanie) are vector-drawn around
+him in `art/Props.kt`.
 
 | | | | |
 |---|---|---|---|
@@ -29,12 +38,14 @@ Messages, Discord, Instagram, wherever. **Save** drops it into
 The GIF encoder is written from scratch in `gif/`:
 
 - `Quantizer.kt` — median-cut over a 5-5-5 histogram, building one global
-  256-colour table for the whole animation.
+  colour table for the whole animation.
 - `GifWriter.kt` — GIF89a container plus a variable-width LZW coder, with a
   NETSCAPE2.0 block so it loops forever.
 
 Frames are rendered twice (once to gather colours, once to encode) so only one
-bitmap is ever in memory. A typical animation lands around 300–400 KB.
+bitmap is ever in memory. Photographic fur compresses far worse than flat
+colour, so pixels unchanged from the previous frame are written as a reserved
+transparent index; that plus a 360px export keeps animations around 700 KB.
 
 ## Building
 
