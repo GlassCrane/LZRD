@@ -22,7 +22,7 @@ jobs:
 
       - name: Test and build APKs
         working-directory: flannery-app
-        run: ./gradlew assembleDebug assembleRelease --no-daemon --stacktrace
+        run: ./gradlew test assembleDebug assembleRelease --no-daemon --stacktrace
 
       - name: Collect APKs
         run: |
