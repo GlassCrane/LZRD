@@ -35,12 +35,18 @@ class GifWriter(
         out.write(0)
     }
 
-    /** @param delayCs frame delay in hundredths of a second. */
-    fun addFrame(indices: ByteArray, delayCs: Int) {
+    /**
+     * @param delayCs frame delay in hundredths of a second.
+     * @param transparentIndex palette slot meaning "unchanged since the last
+     *   frame", or -1 for a fully opaque frame.
+     */
+    fun addFrame(indices: ByteArray, delayCs: Int, transparentIndex: Int = -1) {
+        val transparent = transparentIndex >= 0
         out.write(0x21); out.write(0xF9); out.write(0x04)
-        out.write(0x04)          // disposal "leave in place", no transparency
+        // disposal "leave in place", plus the transparency flag
+        out.write(if (transparent) 0x05 else 0x04)
         writeShort(delayCs)
-        out.write(0)             // transparent colour index (unused)
+        out.write(if (transparent) transparentIndex else 0)
         out.write(0)
 
         out.write(0x2C)

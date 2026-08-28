@@ -8,6 +8,7 @@ import android.view.View
 import com.glasscrane.flannery.anim.AnimSpec
 import com.glasscrane.flannery.anim.Renderer
 import com.glasscrane.flannery.art.Stage
+import com.glasscrane.flannery.art.ensureSprite
 
 /** Plays one animation on loop, stepped to the same frames the GIF will contain. */
 class FlanneryView @JvmOverloads constructor(
@@ -18,6 +19,10 @@ class FlanneryView @JvmOverloads constructor(
     private var spec: AnimSpec? = null
     private var stage: Stage? = null
     private var startedAt = 0L
+
+    init {
+        ensureSprite(context)
+    }
 
     fun setAnimation(spec: AnimSpec) {
         this.spec = spec

@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.glasscrane.flannery.anim.AnimSpec
 import com.glasscrane.flannery.anim.Animations
+import com.glasscrane.flannery.art.ensureSprite
 import com.glasscrane.flannery.share.GifExporter
 import com.glasscrane.flannery.share.Sharer
 import com.glasscrane.flannery.ui.FlanneryView
@@ -38,6 +39,7 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
 
+        ensureSprite(this)
         spec = Animations.byId(intent.getStringExtra(EXTRA_ID) ?: "idle")
 
         findViewById<TextView>(R.id.detailTitle).text = spec.title

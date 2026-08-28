@@ -8,7 +8,7 @@ package com.glasscrane.flannery.gif
  * every populated histogram cell is assigned directly to the box that owns it —
  * no nearest-neighbour search is required.
  */
-class Quantizer(private val maxColors: Int = 256) {
+class Quantizer(private val maxColors: Int = 255) {
 
     private val hist = IntArray(1 shl 15)
 
@@ -32,7 +32,7 @@ class Quantizer(private val maxColors: Int = 256) {
         var populated = 0
         for (c in hist) if (c > 0) populated++
         if (populated == 0) {
-            palette = IntArray(maxColors)
+            palette = IntArray(256)
             lookup = ByteArray(1 shl 15)
             return
         }
@@ -79,7 +79,7 @@ class Quantizer(private val maxColors: Int = 256) {
             boxCount++
         }
 
-        palette = IntArray(maxColors)
+        palette = IntArray(256)
         lookup = ByteArray(1 shl 15)
         for (i in 0 until boxCount) {
             var wr = 0L; var wg = 0L; var wb = 0L; var wt = 0L

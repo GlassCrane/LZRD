@@ -41,7 +41,7 @@ object Renderer {
 
 private fun base(st: Stage): Pose {
     val p = st.pose
-    p.reset(st.w * 0.5f, st.h * 0.54f, st.u * 0.50f)
+    p.reset(st.w * 0.5f, st.h * 0.52f, st.u * 0.66f)
     return p
 }
 
@@ -213,7 +213,7 @@ object Animations {
             val eaten = clamp01(t * 1.15f)
             p.rot = 5f * sin(t * TAU * bites)
             p.attach = { s, hw, hh ->
-                Props.cookie(s, hw * 0.86f, -hh * 0.06f, hw * 0.26f, eaten)
+                Props.cookie(s, hw * 0.88f, hh * 0.14f, hw * 0.24f, eaten)
             }
             Flannery.draw(st, p)
             for (i in 0 until 5) {
@@ -236,7 +236,7 @@ object Animations {
             p.eyes = Eyes.HAPPY
             p.mouth = Mouth.OPEN
             p.blush = 0.7f
-            p.attach = { s, hw, hh -> Props.partyHat(s, hw * 0.06f, -hh * 0.78f, hw * 0.36f) }
+            p.attach = { s, hw, hh -> Props.partyHat(s, hw * 0.06f, -hh * 0.62f, hw * 0.31f) }
             val colors = intArrayOf(Hue.PINK, Hue.GOLD, 0xFF7BC4FF.toInt(), 0xFF8BE08B.toInt(), 0xFFC79BFF.toInt())
             for (i in 0 until 16) {
                 val ct = (t + rnd(i)) % 1f
@@ -314,7 +314,7 @@ object Animations {
             val p = base(st)
             val sweep = ease(clamp01(t * 2.2f))
             val fade = if (t > 0.82f) 1f - (t - 0.82f) / 0.18f else 1f
-            Props.rainbow(st, st.w * 0.5f, st.h * 0.66f, st.u * 0.37f, sweep, fade)
+            Props.rainbow(st, st.w * 0.5f, st.h * 0.74f, st.u * 0.55f, sweep, fade)
             p.gazeY = -0.7f
             p.eyes = Eyes.HAPPY
             p.mouth = Mouth.SMILE
@@ -324,8 +324,8 @@ object Animations {
             for (i in 0 until 6) {
                 val s = pulse((t * 2f + rnd(i)) % 1f)
                 val a = 3.6f + rnd(i * 3) * 2.2f
-                Props.sparkle(st, st.w * 0.5f + cos(a) * st.u * 0.40f,
-                    st.h * 0.66f + sin(a) * st.u * 0.40f,
+                Props.sparkle(st, st.w * 0.5f + cos(a) * st.u * 0.58f,
+                    st.h * 0.74f + sin(a) * st.u * 0.58f,
                     st.u * 0.035f * s, withAlpha(Hue.WHITE, s))
             }
         },

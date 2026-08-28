@@ -145,16 +145,16 @@ object Props {
     fun beanie(st: Stage, hw: Float, hh: Float) {
         val red = 0xFFD9576B.toInt()
         val redDeep = 0xFFBE4457.toInt()
-        st.oval(0f, -hh * 0.94f, hw * 0.58f, hh * 0.30f, red)
-        st.rect.set(-hw * 0.64f, -hh * 0.84f, hw * 0.64f, -hh * 0.62f)
+        st.oval(0f, -hh * 0.78f, hw * 0.50f, hh * 0.26f, red)
+        st.rect.set(-hw * 0.56f, -hh * 0.70f, hw * 0.56f, -hh * 0.50f)
         st.canvas.drawRoundRect(st.rect, hh * 0.11f, hh * 0.11f, st.fill(redDeep))
         // knit ribbing
         val pt = st.stroke(withAlpha(Hue.CREAM, 0.35f), hw * 0.018f)
         for (i in 0 until 7) {
-            val x = -hw * 0.52f + hw * 0.173f * i
-            st.canvas.drawLine(x, -hh * 0.82f, x, -hh * 0.64f, pt)
+            val x = -hw * 0.45f + hw * 0.150f * i
+            st.canvas.drawLine(x, -hh * 0.68f, x, -hh * 0.52f, pt)
         }
-        st.circle(0f, -hh * 1.24f, hw * 0.135f, Hue.CREAM)
+        st.circle(0f, -hh * 1.04f, hw * 0.115f, Hue.CREAM)
     }
 
     fun rainbow(st: Stage, cx: Float, cy: Float, r: Float, sweep: Float, alpha: Float) {

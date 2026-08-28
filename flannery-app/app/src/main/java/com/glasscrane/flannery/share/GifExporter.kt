@@ -21,7 +21,10 @@ import kotlin.math.roundToInt
  */
 object GifExporter {
 
-    const val SIZE = 420
+    const val SIZE = 360
+
+    /** Palette slot reserved to mean "same as the previous frame". */
+    private const val TRANSPARENT: Byte = -1   // 255
 
     fun encode(spec: AnimSpec, dest: File, onProgress: (Float) -> Unit) {
         val bmp = Bitmap.createBitmap(SIZE, SIZE, Bitmap.Config.ARGB_8888)
@@ -41,6 +44,7 @@ object GifExporter {
             onProgress(0.5f)
 
             val indices = ByteArray(SIZE * SIZE)
+            val previous = ByteArray(SIZE * SIZE)
             val delayCs = max(2, (100f / spec.fps).roundToInt())
             dest.parentFile?.mkdirs()
 
@@ -51,7 +55,18 @@ object GifExporter {
                     Renderer.render(stage, spec, f.toFloat() / spec.frames)
                     bmp.getPixels(px, 0, SIZE, 0, 0, SIZE, SIZE)
                     quantizer.map(px, indices)
-                    gif.addFrame(indices, delayCs)
+                    if (f == 0) {
+                        gif.addFrame(indices, delayCs)
+                        System.arraycopy(indices, 0, previous, 0, indices.size)
+                    } else {
+                        // pixels identical to the last frame become transparent,
+                        // which compresses to almost nothing
+                        for (i in indices.indices) {
+                            val v = indices[i]
+                            if (v == previous[i]) indices[i] = TRANSPARENT else previous[i] = v
+                        }
+                        gif.addFrame(indices, delayCs, TRANSPARENT.toInt() and 0xFF)
+                    }
                     onProgress(0.5f + 0.5f * (f + 1) / spec.frames)
                 }
                 gif.finish()
