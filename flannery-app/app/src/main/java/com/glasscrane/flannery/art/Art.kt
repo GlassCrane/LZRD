@@ -92,7 +92,6 @@ class Pose {
     var gazeX = 0f
     var gazeY = 0f
     var blush = 0f
-    var alpha = 1f
     var shadow = 1f
     var attach: ((Stage, Float, Float) -> Unit)? = null
 
@@ -100,12 +99,13 @@ class Pose {
         this.cx = cx; this.cy = cy; this.size = size
         rot = 0f; sx = 1f; sy = 1f
         eyes = Eyes.OPEN; brows = Brows.NONE
-        gazeX = 0f; gazeY = 0f; blush = 0f; alpha = 1f
+        gazeX = 0f; gazeY = 0f; blush = 0f
         shadow = 1f; attach = null
     }
 }
 
 class Stage(var canvas: Canvas, var w: Float, var h: Float) {
+
     val p = Paint(Paint.ANTI_ALIAS_FLAG)
     val bmpPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { isFilterBitmap = true }
     val path = Path()
@@ -147,20 +147,13 @@ object Flannery {
         val c = st.canvas
         val half = p.size * 0.5f
 
-        if (p.shadow > 0.01f) {
-            st.oval(p.cx, p.cy + half * 0.96f, half * 0.62f * p.sx, half * 0.085f,
-                withAlpha(Hue.SHADOW, 0.22f * p.shadow))
-        }
-
         c.save()
         c.translate(p.cx, p.cy)
         if (p.rot != 0f) c.rotate(p.rot)
         if (p.sx != 1f || p.sy != 1f) c.scale(p.sx, p.sy)
 
         st.rect.set(-half, -half, half, half)
-        st.bmpPaint.alpha = (clamp01(p.alpha) * 255f).toInt()
         c.drawBitmap(bmp, null, st.rect, st.bmpPaint)
-        st.bmpPaint.alpha = 255
 
         val s = p.size
         drawEyes(st, p, s)

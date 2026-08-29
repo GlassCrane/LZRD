@@ -23,26 +23,19 @@ class AnimSpec(
     val id: String,
     val title: String,
     val blurb: String,
-    val bg: Int,
     val frames: Int,
     val fps: Int,
     val draw: (Stage, Float) -> Unit
 )
 
 /** Draws one frame of one animation, background included. Shared by the live view and the GIF encoder. */
+/**
+ * Draws one frame. There is no background layer and no soft shading: GIF alpha
+ * is 1-bit, so anything semi-transparent would either vanish or harden into a
+ * block. The same frames drive the on-screen preview and the exported GIF.
+ */
 object Renderer {
-    fun render(st: Stage, spec: AnimSpec, t: Float) {
-        st.canvas.drawColor(spec.bg)
-        // Soft pool of light he sits in. On a dark scene a 45% white oval reads
-        // as a grey blob, so the pool follows the background's brightness.
-        val b = spec.bg
-        val lum = (((b shr 16) and 0xFF) * 0.299f +
-                   ((b shr 8) and 0xFF) * 0.587f +
-                   (b and 0xFF) * 0.114f) / 255f
-        st.oval(st.w * 0.5f, st.h * 0.58f, st.u * 0.46f, st.u * 0.44f,
-            withAlpha(Hue.WHITE, if (lum > 0.5f) 0.45f else 0.07f))
-        spec.draw(st, t)
-    }
+    fun render(st: Stage, spec: AnimSpec, t: Float) = spec.draw(st, t)
 }
 
 private fun base(st: Stage): Pose {
@@ -58,7 +51,7 @@ object Animations {
     val all: List<AnimSpec> = listOf(
 
         // 1
-        AnimSpec("idle", "Idle Squish", "just vibing", 0xFFFFF6EE.toInt(), 30, 20) { st, t ->
+        AnimSpec("idle", "Idle Squish", "just vibing", 30, 20) { st, t ->
             val p = base(st)
             val b = sin(t * TAU)
             p.sy = 1f + 0.045f * b
@@ -70,7 +63,7 @@ object Animations {
         },
 
         // 2
-        AnimSpec("bounce", "Happy Bounce", "boing boing", 0xFFFFF1E4.toInt(), 30, 20) { st, t ->
+        AnimSpec("bounce", "Happy Bounce", "boing boing", 30, 20) { st, t ->
             val p = base(st)
             val ph = (t * 2f) % 1f
             val air = sin(ph * 3.14159265f)
@@ -85,7 +78,7 @@ object Animations {
         },
 
         // 3
-        AnimSpec("wiggle", "Wiggle Wiggle", "happy shimmy", 0xFFFDF2F6.toInt(), 30, 20) { st, t ->
+        AnimSpec("wiggle", "Wiggle Wiggle", "happy shimmy", 30, 20) { st, t ->
             val p = base(st)
             val s = sin(t * TAU * 2f)
             p.rot = 11f * s
@@ -97,7 +90,7 @@ object Animations {
         },
 
         // 4
-        AnimSpec("boop", "Blink & Boop", "right on the snoot", 0xFFF3F8FF.toInt(), 36, 20) { st, t ->
+        AnimSpec("boop", "Blink & Boop", "right on the snoot", 36, 20) { st, t ->
             val p = base(st)
             p.eyes = when {
                 t > 0.08f && t < 0.15f -> Eyes.BLINK
@@ -130,7 +123,7 @@ object Animations {
         },
 
         // 5
-        AnimSpec("love", "Heart Eyes", "he loves you", 0xFFFFF0F3.toInt(), 30, 20) { st, t ->
+        AnimSpec("love", "Heart Eyes", "he loves you", 30, 20) { st, t ->
             val p = base(st)
             for (i in 0 until 7) {
                 val ht = (t + i / 7f) % 1f
@@ -147,7 +140,7 @@ object Animations {
         },
 
         // 6
-        AnimSpec("sleepy", "Sleepy Time", "shhh he's resting", 0xFFEFF1FB.toInt(), 36, 16) { st, t ->
+        AnimSpec("sleepy", "Sleepy Time", "shhh he's resting", 36, 16) { st, t ->
             val p = base(st)
             val b = sin(t * TAU)
             p.sy = 1f + 0.055f * b
@@ -165,9 +158,8 @@ object Animations {
         },
 
         // 7
-        AnimSpec("sparkle", "Sparkle Pop", "extremely shiny", 0xFFFFFBEA.toInt(), 30, 20) { st, t ->
+        AnimSpec("sparkle", "Sparkle Pop", "extremely shiny", 30, 20) { st, t ->
             val p = base(st)
-            Props.glow(st, p.cx, p.cy, st.u * 0.60f, Hue.GOLD, 0.5f + 0.4f * sin(t * TAU))
             for (i in 0 until 10) {
                 val phase = (t * 2f + rnd(i)) % 1f
                 val a = rnd(i * 3) * TAU
@@ -184,7 +176,7 @@ object Animations {
         },
 
         // 8 — no arms, so he greets you with a whole-body bow
-        AnimSpec("hello", "Hi There", "a little bow", 0xFFF2FBF6.toInt(), 30, 20) { st, t ->
+        AnimSpec("hello", "Hi There", "a little bow", 30, 20) { st, t ->
             val p = base(st)
             val nod = pulse(window(t, 0.05f, 0.35f)) + pulse(window(t, 0.40f, 0.70f))
             p.rot = -13f * nod
@@ -201,7 +193,7 @@ object Animations {
         },
 
         // 9
-        AnimSpec("snack", "Snack Time", "om nom nom", 0xFFFFF4E6.toInt(), 36, 18) { st, t ->
+        AnimSpec("snack", "Snack Time", "om nom nom", 36, 18) { st, t ->
             val p = base(st)
             val bites = 3
             val phase = (t * bites) % 1f
@@ -224,7 +216,7 @@ object Animations {
         },
 
         // 10
-        AnimSpec("party", "Party Time", "confetti incoming", 0xFFFFF0F8.toInt(), 36, 20) { st, t ->
+        AnimSpec("party", "Party Time", "confetti incoming", 36, 20) { st, t ->
             val p = base(st)
             val ph = (t * 2f) % 1f
             val air = sin(ph * 3.14159265f)
@@ -247,7 +239,7 @@ object Animations {
         },
 
         // 11
-        AnimSpec("dance", "Dance Party", "he's got moves", 0xFFF6F1FF.toInt(), 30, 20) { st, t ->
+        AnimSpec("dance", "Dance Party", "he's got moves", 30, 20) { st, t ->
             val p = base(st)
             val s = sin(t * TAU * 2f)
             p.rot = 13f * s
@@ -267,7 +259,7 @@ object Animations {
         },
 
         // 12
-        AnimSpec("peekaboo", "Peek-a-Boo", "there he is", 0xFFEFF7FF.toInt(), 36, 18) { st, t ->
+        AnimSpec("peekaboo", "Peek-a-Boo", "there he is", 36, 18) { st, t ->
             val p = base(st)
             val up = when {
                 t < 0.22f -> ease(t / 0.22f)
@@ -294,7 +286,7 @@ object Animations {
         },
 
         // 13
-        AnimSpec("roll", "Barrel Roll", "wheee", 0xFFF1F9F7.toInt(), 30, 20) { st, t ->
+        AnimSpec("roll", "Barrel Roll", "wheee", 30, 20) { st, t ->
             val p = base(st)
             p.cx = -st.u * 0.42f + (st.w + st.u * 0.84f) * t
             p.rot = t * 720f
@@ -305,7 +297,7 @@ object Animations {
         },
 
         // 14
-        AnimSpec("rainbow", "Rainbow Mood", "pure serotonin", 0xFFF7FBFF.toInt(), 36, 20) { st, t ->
+        AnimSpec("rainbow", "Rainbow Mood", "pure serotonin", 36, 20) { st, t ->
             val p = base(st)
             val sweep = ease(clamp01(t * 2.2f))
             val fade = if (t > 0.82f) 1f - (t - 0.82f) / 0.18f else 1f
@@ -325,7 +317,7 @@ object Animations {
         },
 
         // 15
-        AnimSpec("rain", "Rainy Blep", "a small sad", 0xFFEDF1F5.toInt(), 30, 20) { st, t ->
+        AnimSpec("rain", "Rainy Blep", "a small sad", 30, 20) { st, t ->
             val p = base(st)
             val cx = st.w * 0.5f
             val cy = st.h * 0.16f
@@ -346,7 +338,7 @@ object Animations {
         },
 
         // 16
-        AnimSpec("snow", "Cozy Snow", "scarf weather", 0xFFF0F6FB.toInt(), 36, 18) { st, t ->
+        AnimSpec("snow", "Cozy Snow", "scarf weather", 36, 18) { st, t ->
             val p = base(st)
             p.rot = 4f * sin(t * TAU)
             p.sy = 1f + 0.03f * sin(t * TAU)
@@ -364,7 +356,7 @@ object Animations {
         },
 
         // 17
-        AnimSpec("flame", "Tiny Flame", "he is a dragon actually", 0xFFFFF3EC.toInt(), 36, 20) { st, t ->
+        AnimSpec("flame", "Tiny Flame", "he is a dragon actually", 36, 20) { st, t ->
             val p = base(st)
             val inhale = window(t, 0.00f, 0.34f)
             val blow = window(t, 0.34f, 0.62f)
@@ -392,7 +384,7 @@ object Animations {
         },
 
         // 18
-        AnimSpec("bubbles", "Bubble Blow", "blub blub", 0xFFEFF9FF.toInt(), 36, 20) { st, t ->
+        AnimSpec("bubbles", "Bubble Blow", "blub blub", 36, 20) { st, t ->
             val p = base(st)
             p.eyes = Eyes.HAPPY
             p.blush = 0.55f
@@ -418,7 +410,7 @@ object Animations {
         },
 
         // 19
-        AnimSpec("yawn", "Big Yawn", "long day", 0xFFFDF4FF.toInt(), 36, 16) { st, t ->
+        AnimSpec("yawn", "Big Yawn", "long day", 36, 16) { st, t ->
             val p = base(st)
             val rise = window(t, 0.10f, 0.42f)
             val hold = window(t, 0.42f, 0.62f)
@@ -455,7 +447,7 @@ object Animations {
         },
 
         // 20
-        AnimSpec("stars", "Star Gazing", "make a wish", 0xFFF1F0FA.toInt(), 36, 18) { st, t ->
+        AnimSpec("stars", "Star Gazing", "make a wish", 36, 18) { st, t ->
             val p = base(st)
             for (i in 0 until 12) {
                 val s = pulse((t * 1.5f + rnd(i)) % 1f)
@@ -483,7 +475,7 @@ object Animations {
         // ---- 21-40 ----------------------------------------------------------
 
         // 21
-        AnimSpec("rocket", "Ratty Rocketship", "3… 2… 1…", 0xFFEFF3FA.toInt(), 44, 20) { st, t ->
+        AnimSpec("rocket", "Ratty Rocketship", "3… 2… 1…", 44, 20) { st, t ->
             val p = base(st)
             val ground = st.h * 0.52f
             val charge = window(t, 0.00f, 0.46f)
@@ -529,7 +521,7 @@ object Animations {
         },
 
         // 22
-        AnimSpec("rarf", "RARF!!!!", "small guy, big opinion", 0xFFFFF0EC.toInt(), 36, 20) { st, t ->
+        AnimSpec("rarf", "RARF!!!!", "small guy, big opinion", 36, 20) { st, t ->
             val p = base(st)
             val wind = window(t, 0.00f, 0.22f)
             val bark = window(t, 0.22f, 0.62f)
@@ -567,7 +559,7 @@ object Animations {
         },
 
         // 23
-        AnimSpec("zoomies", "Zoomies", "he has the zoomies", 0xFFF2FAF4.toInt(), 30, 22) { st, t ->
+        AnimSpec("zoomies", "Zoomies", "he has the zoomies", 30, 22) { st, t ->
             val p = base(st)
             val sweep = sin(t * TAU)
             p.cx = st.w * 0.5f + st.u * 0.30f * sweep
@@ -584,7 +576,7 @@ object Animations {
         },
 
         // 24
-        AnimSpec("hug", "Squish Hug", "squeezed", 0xFFFFF0F4.toInt(), 30, 20) { st, t ->
+        AnimSpec("hug", "Squish Hug", "squeezed", 30, 20) { st, t ->
             val p = base(st)
             val sq = pulse(window(t, 0.10f, 0.70f))
             p.sx = 1f + 0.20f * sq
@@ -602,7 +594,7 @@ object Animations {
         },
 
         // 25
-        AnimSpec("coffee", "Coffee Buzz", "one too many", 0xFFF7F0E8.toInt(), 30, 24) { st, t ->
+        AnimSpec("coffee", "Coffee Buzz", "one too many", 30, 24) { st, t ->
             val p = base(st)
             p.cx += st.u * 0.010f * sin(t * 190f)
             p.cy += st.u * 0.007f * sin(t * 233f)
@@ -619,14 +611,12 @@ object Animations {
         },
 
         // 26
-        AnimSpec("boo", "Boo!", "spooky little guy", 0xFF232838.toInt(), 36, 18) { st, t ->
+        AnimSpec("boo", "Boo!", "spooky little guy", 36, 18) { st, t ->
             val p = base(st)
             p.cy -= st.u * 0.04f * sin(t * TAU)
             p.rot = 4f * sin(t * TAU)
-            p.alpha = 0.55f + 0.15f * sin(t * TAU)
             p.shadow = 0f
             p.eyes = Eyes.WIDE
-            Props.glow(st, p.cx, p.cy, st.u * 0.62f, 0xFF9FD6FF.toInt(), 0.7f)
             Flannery.draw(st, p)
             val boo = window(t, 0.55f, 0.95f)
             if (boo > 0f) {
@@ -636,7 +626,7 @@ object Animations {
         },
 
         // 27
-        AnimSpec("trampoline", "Trampoline", "higher! higher!", 0xFFEFF7FF.toInt(), 30, 22) { st, t ->
+        AnimSpec("trampoline", "Trampoline", "higher! higher!", 30, 22) { st, t ->
             val p = base(st)
             val air = sin(clamp01(t) * 3.14159265f * 2f)
             val up = kotlin.math.abs(air)
@@ -655,7 +645,7 @@ object Animations {
         },
 
         // 28
-        AnimSpec("snowball", "Snowball", "gathering momentum", 0xFFF3F8FC.toInt(), 36, 20) { st, t ->
+        AnimSpec("snowball", "Snowball", "gathering momentum", 36, 20) { st, t ->
             val p = base(st)
             p.cx = -st.u * 0.36f + (st.w + st.u * 0.72f) * t
             p.size = st.u * (0.42f + 0.34f * t)
@@ -670,7 +660,7 @@ object Animations {
         },
 
         // 29
-        AnimSpec("windy", "Windy Day", "hold on", 0xFFF4F7EE.toInt(), 30, 20) { st, t ->
+        AnimSpec("windy", "Windy Day", "hold on", 30, 20) { st, t ->
             val p = base(st)
             val gust = 0.6f + 0.4f * sin(t * TAU * 2f)
             p.rot = -13f * gust
@@ -688,7 +678,7 @@ object Animations {
         },
 
         // 30
-        AnimSpec("sunbathe", "Sunbathing", "vitamin D", 0xFFFFF6E2.toInt(), 36, 16) { st, t ->
+        AnimSpec("sunbathe", "Sunbathing", "vitamin D", 36, 16) { st, t ->
             val p = base(st)
             p.cy += st.u * 0.012f * sin(t * TAU)
             p.rot = 2f * sin(t * TAU)
@@ -701,7 +691,7 @@ object Animations {
         },
 
         // 31
-        AnimSpec("zap", "Static Shock", "bzzt", 0xFFFBF7E4.toInt(), 30, 24) { st, t ->
+        AnimSpec("zap", "Static Shock", "bzzt", 30, 24) { st, t ->
             val p = base(st)
             val z = window(t, 0.20f, 0.55f)
             p.cx += st.u * 0.012f * sin(t * 210f) * (if (z > 0f) 1f else 0.25f)
@@ -720,13 +710,12 @@ object Animations {
         },
 
         // 32
-        AnimSpec("levitate", "Levitate", "inner peace", 0xFFF1F0FB.toInt(), 36, 16) { st, t ->
+        AnimSpec("levitate", "Levitate", "inner peace", 36, 16) { st, t ->
             val p = base(st)
             val f = 0.5f + 0.5f * sin(t * TAU)
             p.cy -= st.u * 0.10f * f
             p.shadow = 0.25f + 0.35f * (1f - f)
             p.eyes = Eyes.SLEEPY
-            Props.glow(st, p.cx, p.cy, st.u * 0.66f, 0xFFB9A6FF.toInt(), 0.55f + 0.35f * f)
             val pt = st.stroke(withAlpha(0xFFB9A6FF.toInt(), 0.45f), st.u * 0.010f)
             st.rect.set(p.cx - st.u * 0.34f, p.cy + st.u * (0.30f + 0.05f * f) - st.u * 0.05f,
                 p.cx + st.u * 0.34f, p.cy + st.u * (0.30f + 0.05f * f) + st.u * 0.05f)
@@ -735,7 +724,7 @@ object Animations {
         },
 
         // 33
-        AnimSpec("fireworks", "Fireworks", "ooooh", 0xFF20263A.toInt(), 44, 18) { st, t ->
+        AnimSpec("fireworks", "Fireworks", "ooooh", 44, 18) { st, t ->
             val p = base(st)
             p.gazeY = -0.8f
             p.eyes = Eyes.WIDE
@@ -749,7 +738,7 @@ object Animations {
         },
 
         // 34
-        AnimSpec("birthday", "Birthday", "make a wish", 0xFFFFF3F7.toInt(), 36, 18) { st, t ->
+        AnimSpec("birthday", "Birthday", "make a wish", 36, 18) { st, t ->
             val p = base(st)
             p.cy -= st.u * 0.015f * sin(t * TAU * 2f)
             p.eyes = Eyes.HAPPY
@@ -766,7 +755,7 @@ object Animations {
         },
 
         // 35
-        AnimSpec("puddle", "Puddle Splash", "worth it", 0xFFEEF5F9.toInt(), 36, 20) { st, t ->
+        AnimSpec("puddle", "Puddle Splash", "worth it", 36, 20) { st, t ->
             val p = base(st)
             val jump = window(t, 0.00f, 0.42f)
             val land = window(t, 0.42f, 1.00f)
@@ -787,7 +776,7 @@ object Animations {
         },
 
         // 36
-        AnimSpec("thinking", "Thinking", "hmm", 0xFFF5F5F0.toInt(), 36, 14) { st, t ->
+        AnimSpec("thinking", "Thinking", "hmm", 36, 14) { st, t ->
             val p = base(st)
             p.rot = 6f * sin(t * TAU)
             p.gazeX = 0.6f * sin(t * TAU)
@@ -799,7 +788,7 @@ object Animations {
         },
 
         // 37
-        AnimSpec("heartbeat", "Heartbeat", "ba-dum", 0xFFFFF1F2.toInt(), 30, 20) { st, t ->
+        AnimSpec("heartbeat", "Heartbeat", "ba-dum", 30, 20) { st, t ->
             val p = base(st)
             val beat = pulse(window(t, 0.00f, 0.18f)) + 0.6f * pulse(window(t, 0.22f, 0.38f))
             val k = 1f + 0.055f * beat
@@ -812,7 +801,7 @@ object Animations {
         },
 
         // 38
-        AnimSpec("starstruck", "Star Struck", "seeing stars", 0xFFF8F4EA.toInt(), 36, 18) { st, t ->
+        AnimSpec("starstruck", "Star Struck", "seeing stars", 36, 18) { st, t ->
             val p = base(st)
             p.rot = 5f * sin(t * TAU)
             p.eyes = Eyes.DIZZY
@@ -826,7 +815,7 @@ object Animations {
         },
 
         // 39
-        AnimSpec("sneeze", "Sneeze", "aa-aa-CHOO", 0xFFF6F2FB.toInt(), 36, 20) { st, t ->
+        AnimSpec("sneeze", "Sneeze", "aa-aa-CHOO", 36, 20) { st, t ->
             val p = base(st)
             val wind = window(t, 0.00f, 0.44f)
             val blast = window(t, 0.44f, 0.78f)
@@ -859,7 +848,7 @@ object Animations {
         },
 
         // 40
-        AnimSpec("disco", "Disco", "certified mover", 0xFF2A2340.toInt(), 36, 20) { st, t ->
+        AnimSpec("disco", "Disco", "certified mover", 36, 20) { st, t ->
             val p = base(st)
             val s2 = sin(t * TAU * 2f)
             p.rot = 12f * s2
@@ -867,10 +856,11 @@ object Animations {
             p.cy -= st.u * 0.035f * kotlin.math.abs(s2)
             p.eyes = Eyes.HAPPY
             val colors = intArrayOf(0xFFFF6FA5.toInt(), 0xFF6FD8FF.toInt(), 0xFFFFD86F.toInt(), 0xFFA98CFF.toInt())
-            for (i in 0 until 4) {
-                val a = t * TAU + i / 4f * TAU
-                Props.glow(st, st.w * 0.5f + cos(a) * st.u * 0.34f,
-                    st.h * 0.48f + sin(a) * st.u * 0.22f, st.u * 0.30f, colors[i], 0.55f)
+            for (i in 0 until 8) {
+                val a = t * TAU + i / 8f * TAU
+                Props.star(st, st.w * 0.5f + cos(a) * st.u * 0.40f,
+                    st.h * 0.44f + sin(a) * st.u * 0.30f,
+                    st.u * 0.030f, colors[i % 4], 4)
             }
             Flannery.draw(st, p)
             for (i in 0 until 6) {
@@ -884,4 +874,13 @@ object Animations {
     )
 
     fun byId(id: String): AnimSpec = all.firstOrNull { it.id == id } ?: all[0]
+
+    /** The grid's sections. Every id appears exactly once; order is display order. */
+    val sections: List<Pair<String, List<String>>> = listOf(
+        "Quiet Hours" to listOf("idle", "hello", "sleepy", "yawn", "thinking", "snack", "coffee", "sneeze"),
+        "Full of Beans" to listOf("bounce", "wiggle", "zoomies", "roll", "trampoline", "dance", "disco", "zap"),
+        "Soft Feelings" to listOf("love", "hug", "heartbeat", "boop", "sparkle", "starstruck", "rarf", "boo"),
+        "Weather Permitting" to listOf("rain", "snow", "windy", "sunbathe", "rainbow", "snowball", "puddle", "stars"),
+        "Party Tricks" to listOf("party", "birthday", "fireworks", "rocket", "flame", "bubbles", "peekaboo", "levitate")
+    )
 }

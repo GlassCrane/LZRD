@@ -182,15 +182,6 @@ object Props {
         st.circle(x, y, r, withAlpha(0xFF8C5A2B.toInt(), alpha))
     }
 
-    /** Soft radial glow used behind sparkle-y moments. */
-    fun glow(st: Stage, x: Float, y: Float, r: Float, color: Int, alpha: Float) {
-        var i = 6
-        while (i >= 1) {
-            st.circle(x, y, r * (i / 6f), withAlpha(color, alpha * 0.10f))
-            i--
-        }
-    }
-
     /** A dashed motion arc, for spins and rolls. */
     fun swoosh(st: Stage, x: Float, y: Float, r: Float, from: Float, sweep: Float, alpha: Float) {
         val pt = st.stroke(withAlpha(Hue.MINT_DEEP, alpha), r * 0.09f)

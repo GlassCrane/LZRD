@@ -19,8 +19,10 @@ class Quantizer(private val maxColors: Int = 255) {
     /** 5-5-5 cell -> palette index, valid after [build]. */
     private var lookup = ByteArray(0)
 
-    fun addFrame(pixels: IntArray) {
+    /** @param minAlpha pixels below this alpha are background and are skipped. */
+    fun addFrame(pixels: IntArray, minAlpha: Int = 0) {
         for (px in pixels) {
+            if (minAlpha > 0 && (px ushr 24) and 0xFF < minAlpha) continue
             val r = (px ushr 19) and 31
             val g = (px ushr 11) and 31
             val b = (px ushr 3) and 31

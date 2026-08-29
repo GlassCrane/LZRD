@@ -10,7 +10,10 @@ class GifWriter(
     private val out: OutputStream,
     private val width: Int,
     private val height: Int,
-    private val palette: IntArray
+    private val palette: IntArray,
+    /** Palette slot the screen is cleared to. Point it at the transparent
+     *  index so "restore to background" leaves transparency, not a colour. */
+    private val backgroundIndex: Int = 0
 ) {
 
     fun start() {
@@ -19,7 +22,7 @@ class GifWriter(
         writeShort(height)
         // global colour table present, 8-bit colour resolution, 256 entries
         out.write(0xF7)
-        out.write(0)   // background colour index
+        out.write(backgroundIndex)
         out.write(0)   // pixel aspect ratio
         for (i in 0 until 256) {
             val c = if (i < palette.size) palette[i] else 0
@@ -37,21 +40,33 @@ class GifWriter(
 
     /**
      * @param delayCs frame delay in hundredths of a second.
-     * @param transparentIndex palette slot meaning "unchanged since the last
-     *   frame", or -1 for a fully opaque frame.
+     * @param transparentIndex palette slot meaning transparent, or -1 for none.
+     * @param disposal 1 = leave in place (frame differencing), 2 = restore to
+     *   background before the next frame (required when the background is
+     *   transparent, or the subject smears across frames).
+     * @param x,y,w,h the sub-rectangle this frame covers. Writing only the
+     *   part that changed is what keeps transparent GIFs from doubling in size.
      */
-    fun addFrame(indices: ByteArray, delayCs: Int, transparentIndex: Int = -1) {
+    fun addFrame(
+        indices: ByteArray,
+        delayCs: Int,
+        transparentIndex: Int = -1,
+        disposal: Int = 1,
+        x: Int = 0,
+        y: Int = 0,
+        w: Int = width,
+        h: Int = height
+    ) {
         val transparent = transparentIndex >= 0
         out.write(0x21); out.write(0xF9); out.write(0x04)
-        // disposal "leave in place", plus the transparency flag
-        out.write(if (transparent) 0x05 else 0x04)
+        out.write((disposal shl 2) or (if (transparent) 1 else 0))
         writeShort(delayCs)
         out.write(if (transparent) transparentIndex else 0)
         out.write(0)
 
         out.write(0x2C)
-        writeShort(0); writeShort(0)
-        writeShort(width); writeShort(height)
+        writeShort(x); writeShort(y)
+        writeShort(w); writeShort(h)
         out.write(0)             // no local table, not interlaced
 
         lzwEncode(indices)

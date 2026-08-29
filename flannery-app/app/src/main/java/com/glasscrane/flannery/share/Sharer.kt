@@ -15,7 +15,7 @@ object Sharer {
      * never reused. v1 files were produced by an encoder with a broken LZW code
      * width and would not render anywhere.
      */
-    private const val ENCODER_VERSION = 2
+    private const val ENCODER_VERSION = 3
 
     fun cacheFileFor(ctx: Context, id: String): File {
         val dir = File(ctx.cacheDir, "shared").apply { mkdirs() }

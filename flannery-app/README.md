@@ -51,10 +51,17 @@ The GIF encoder is written from scratch in `gif/`:
 - `GifWriter.kt` — GIF89a container plus a variable-width LZW coder, with a
   NETSCAPE2.0 block so it loops forever.
 
+GIFs export with a **transparent background**, so Flannery drops onto whatever
+he is sent — no baked-in card colour. GIF alpha is one bit (a pixel is either
+opaque or clear), so soft shading cannot survive it: there is no ground shadow,
+pool of light, or glow anywhere in the renderer, on purpose. Anything
+semi-transparent would either vanish or harden into a block.
+
+Transparency also rules out frame differencing — the transparent index means
+"background", so every frame clears the last (disposal 2) and redraws. The
+size that would cost is won back by writing only each frame's dirty rectangle.
 Frames are rendered twice (once to gather colours, once to encode) so only one
-bitmap is ever in memory. Photographic fur compresses far worse than flat
-colour, so pixels unchanged from the previous frame are written as a reserved
-transparent index; that plus a 360px export keeps animations around 700 KB.
+bitmap is ever in memory; animations land around 850 KB.
 
 ## Building
 
@@ -72,8 +79,11 @@ cd flannery-app
 ### Look
 
 Dark papercraft. The ground is near-black under a tiled paper-fibre texture;
-each animation is mounted like a photo on a light paper cutout, with a hard
-offset shadow and a hair of rotation so the grid reads as pinned-up paper. The
+each animation is mounted like a photo on a light paper cutout — hard offset
+shadow, square corners, a strip of mint washi tape, and a hair of rotation, so
+the grid reads as pinned-up paper. The grid is grouped into five sections
+(Quiet Hours, Full of Beans, Soft Feelings, Weather Permitting, Party Tricks),
+each under its own taped-down paper strip. The
 accent is `#ABD2C3` — sampled from Flannery himself, not picked by eye.
 
 The two grain tiles in `drawable-nodpi/` are generated noise, made seamless by
