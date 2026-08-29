@@ -1,6 +1,6 @@
 # Flannery
 
-A tiny Android app: twenty looping animations of Flannery, each one tap away from
+A tiny Android app: forty looping animations of Flannery, each one tap away from
 being shared anywhere as a GIF.
 
 ## What's inside
@@ -12,10 +12,14 @@ they move, squash and rotate that sprite. `art/Art.kt` renders a `Pose`
 short function moving a pose over normalised time `t` in `[0,1)`.
 
 Expressions are drawn *over* the artwork at face positions measured off the
-image — blinks, happy arcs, heart and star eyes, open mouths. Each one first
-hides the painted feature under a soft patch of the fur colour sampled from
-around it, so the overlay sits on him invisibly. His resting face is left
-untouched, which is why most animations look exactly like him.
+image — blinks, happy arcs, heart and star eyes, eyebrows. Each one first hides
+the painted feature under a soft patch of the fur colour sampled from around
+it, so the overlay sits on him invisibly.
+
+**His mouth is never redrawn.** There is no mouth overlay in the renderer at
+all, so every animation keeps the shape from the original artwork. Animations
+that would normally need a mouth — the shout, the sneeze — carry it with
+motion, eyebrows and text instead.
 
 Props (hearts, confetti, snow, bubbles, the beanie) are vector-drawn around
 him in `art/Props.kt`.
@@ -27,6 +31,11 @@ him in `art/Props.kt`.
 | Snack Time | Party Time | Dance Party | Peek-a-Boo |
 | Barrel Roll | Rainbow Mood | Rainy Blep | Cozy Snow |
 | Tiny Flame | Bubble Blow | Big Yawn | Star Gazing |
+| Ratty Rocketship | RARF!!!! | Zoomies | Squish Hug |
+| Coffee Buzz | Boo! | Trampoline | Snowball |
+| Windy Day | Sunbathing | Static Shock | Levitate |
+| Fireworks | Birthday | Puddle Splash | Thinking |
+| Heartbeat | Star Struck | Sneeze | Disco |
 
 ### Sharing
 

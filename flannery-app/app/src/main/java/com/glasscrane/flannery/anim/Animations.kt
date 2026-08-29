@@ -4,7 +4,7 @@ import com.glasscrane.flannery.art.DEG
 import com.glasscrane.flannery.art.Eyes
 import com.glasscrane.flannery.art.Flannery
 import com.glasscrane.flannery.art.Hue
-import com.glasscrane.flannery.art.Mouth
+import com.glasscrane.flannery.art.Brows
 import com.glasscrane.flannery.art.Pose
 import com.glasscrane.flannery.art.Props
 import com.glasscrane.flannery.art.Stage
@@ -33,8 +33,14 @@ class AnimSpec(
 object Renderer {
     fun render(st: Stage, spec: AnimSpec, t: Float) {
         st.canvas.drawColor(spec.bg)
-        // soft pool of light he sits in
-        st.oval(st.w * 0.5f, st.h * 0.58f, st.u * 0.46f, st.u * 0.44f, withAlpha(Hue.WHITE, 0.45f))
+        // Soft pool of light he sits in. On a dark scene a 45% white oval reads
+        // as a grey blob, so the pool follows the background's brightness.
+        val b = spec.bg
+        val lum = (((b shr 16) and 0xFF) * 0.299f +
+                   ((b shr 8) and 0xFF) * 0.587f +
+                   (b and 0xFF) * 0.114f) / 255f
+        st.oval(st.w * 0.5f, st.h * 0.58f, st.u * 0.46f, st.u * 0.44f,
+            withAlpha(Hue.WHITE, if (lum > 0.5f) 0.45f else 0.07f))
         spec.draw(st, t)
     }
 }
@@ -73,7 +79,6 @@ object Animations {
             p.sx = 1f + 0.20f * ground - 0.07f * air
             p.sy = 1f - 0.20f * ground + 0.12f * air
             p.eyes = Eyes.HAPPY
-            p.mouth = Mouth.SMILE
             p.blush = 0.55f
             p.shadow = 1f - 0.45f * air
             Flannery.draw(st, p)
@@ -87,7 +92,6 @@ object Animations {
             p.cx += st.u * 0.030f * s
             p.sy = 1f + 0.03f * cos(t * TAU * 2f)
             p.eyes = Eyes.HAPPY
-            p.mouth = Mouth.SMILE
             p.blush = 0.6f
             Flannery.draw(st, p)
         },
@@ -138,7 +142,6 @@ object Animations {
             val k = 1f + 0.055f * sin(t * TAU * 2f)
             p.sx = k; p.sy = k
             p.eyes = Eyes.HEART
-            p.mouth = Mouth.SMILE
             p.blush = 0.9f
             Flannery.draw(st, p)
         },
@@ -151,7 +154,6 @@ object Animations {
             p.sx = 1f - 0.045f * b
             p.rot = -7f
             p.eyes = Eyes.SLEEPY
-            p.mouth = Mouth.TINY
             p.blush = 0.4f
             Flannery.draw(st, p)
             for (i in 0 until 3) {
@@ -177,7 +179,6 @@ object Animations {
             val k = 1f + 0.04f * sin(t * TAU * 2f)
             p.sx = k; p.sy = k
             p.eyes = Eyes.HAPPY
-            p.mouth = Mouth.SMILE
             p.blush = 0.5f
             Flannery.draw(st, p)
         },
@@ -191,7 +192,6 @@ object Animations {
             p.sy = 1f - 0.06f * nod
             p.sx = 1f + 0.06f * nod
             p.eyes = Eyes.HAPPY
-            p.mouth = Mouth.SMILE
             val hi = window(t, 0.05f, 0.45f)
             if (hi > 0f) {
                 Props.sparkle(st, p.cx + st.u * 0.30f, p.cy - st.u * (0.22f + 0.10f * hi),
@@ -206,7 +206,6 @@ object Animations {
             val bites = 3
             val phase = (t * bites) % 1f
             val chomp = phase < 0.35f
-            p.mouth = if (chomp) Mouth.WIDE_OPEN else Mouth.SQUIGGLE
             p.eyes = if (chomp) Eyes.HAPPY else Eyes.OPEN
             p.sy = 1f - 0.035f * (if (chomp) 1f else 0f)
             p.blush = 0.5f
@@ -234,7 +233,6 @@ object Animations {
             p.sy = 1f - 0.12f * cube(1f - air)
             p.rot = 6f * sin(t * TAU * 2f)
             p.eyes = Eyes.HAPPY
-            p.mouth = Mouth.OPEN
             p.blush = 0.7f
             p.attach = { s, hw, hh -> Props.partyHat(s, hw * 0.06f, -hh * 0.62f, hw * 0.31f) }
             val colors = intArrayOf(Hue.PINK, Hue.GOLD, 0xFF7BC4FF.toInt(), 0xFF8BE08B.toInt(), 0xFFC79BFF.toInt())
@@ -256,7 +254,6 @@ object Animations {
             p.cx += st.u * 0.05f * s
             p.cy -= st.u * 0.03f * kotlin.math.abs(s)
             p.eyes = Eyes.HAPPY
-            p.mouth = Mouth.OPEN
             p.blush = 0.6f
             for (i in 0 until 5) {
                 val nt = (t + i / 5f) % 1f
@@ -280,7 +277,6 @@ object Animations {
             p.cy = lerp(st.h + st.u * 0.66f, st.h * 0.54f, up)
             p.sy = 1f + 0.07f * (1f - up)
             p.eyes = if (up > 0.85f) Eyes.WIDE else Eyes.OPEN
-            p.mouth = if (up > 0.85f) Mouth.OPEN else Mouth.TINY
             p.blush = 0.6f * up
             p.shadow = 0f
             if (up > 0.9f) {
@@ -304,7 +300,6 @@ object Animations {
             p.rot = t * 720f
             p.cy += st.u * 0.02f * sin(t * TAU * 4f)
             p.eyes = Eyes.HAPPY
-            p.mouth = Mouth.OPEN
             p.blush = 0.6f
             Flannery.draw(st, p)
         },
@@ -317,7 +312,6 @@ object Animations {
             Props.rainbow(st, st.w * 0.5f, st.h * 0.74f, st.u * 0.55f, sweep, fade)
             p.gazeY = -0.7f
             p.eyes = Eyes.HAPPY
-            p.mouth = Mouth.SMILE
             p.blush = 0.6f
             p.sy = 1f + 0.03f * sin(t * TAU)
             Flannery.draw(st, p)
@@ -346,7 +340,6 @@ object Animations {
             p.rot = -5f + 2f * sin(t * TAU)
             p.cy += st.u * 0.015f * sin(t * TAU)
             p.eyes = Eyes.SLEEPY
-            p.mouth = if (t > 0.45f) Mouth.BLEP else Mouth.FROWN
             p.gazeY = 0.5f
             p.blush = 0.35f
             Flannery.draw(st, p)
@@ -358,7 +351,6 @@ object Animations {
             p.rot = 4f * sin(t * TAU)
             p.sy = 1f + 0.03f * sin(t * TAU)
             p.eyes = Eyes.HAPPY
-            p.mouth = Mouth.SMILE
             p.blush = 0.85f
             p.attach = { s, hw, hh -> Props.beanie(s, hw, hh) }
             Flannery.draw(st, p)
@@ -377,12 +369,10 @@ object Animations {
             val inhale = window(t, 0.00f, 0.34f)
             val blow = window(t, 0.34f, 0.62f)
             if (blow > 0f) {
-                p.mouth = Mouth.WIDE_OPEN
                 p.eyes = Eyes.WIDE
                 p.sx = 1f - 0.06f * pulse(blow)
                 p.sy = 1f + 0.06f * pulse(blow)
             } else {
-                p.mouth = Mouth.TINY
                 p.eyes = if (inhale > 0.5f) Eyes.BLINK else Eyes.OPEN
                 p.sx = 1f + 0.07f * inhale
                 p.sy = 1f + 0.07f * inhale
@@ -404,7 +394,6 @@ object Animations {
         // 18
         AnimSpec("bubbles", "Bubble Blow", "blub blub", 0xFFEFF9FF.toInt(), 36, 20) { st, t ->
             val p = base(st)
-            p.mouth = Mouth.OPEN
             p.eyes = Eyes.HAPPY
             p.blush = 0.55f
             p.sy = 1f + 0.03f * sin(t * TAU)
@@ -439,7 +428,6 @@ object Animations {
                     p.sy = 1.16f
                     p.sx = 0.90f
                     p.cy -= st.u * 0.05f
-                    p.mouth = Mouth.YAWN
                     p.eyes = Eyes.BLINK
                 }
                 rise > 0f -> {
@@ -447,7 +435,6 @@ object Animations {
                     p.sy = lerp(1f, 1.16f, e)
                     p.sx = lerp(1f, 0.90f, e)
                     p.cy -= st.u * 0.05f * e
-                    p.mouth = if (rise > 0.5f) Mouth.YAWN else Mouth.OPEN
                     p.eyes = Eyes.BLINK
                 }
                 else -> {
@@ -455,7 +442,6 @@ object Animations {
                     p.sy = lerp(1.16f, 1f, e)
                     p.sx = lerp(0.90f, 1f, e)
                     p.cy -= st.u * 0.05f * (1f - e)
-                    p.mouth = if (settle > 0.55f) Mouth.TINY else Mouth.OPEN
                     p.eyes = if (settle > 0.55f) Eyes.SLEEPY else Eyes.BLINK
                 }
             }
@@ -489,11 +475,412 @@ object Animations {
             }
             p.gazeY = -0.85f
             p.eyes = if (t > 0.70f) Eyes.STAR else Eyes.OPEN
-            p.mouth = if (t > 0.70f) Mouth.SMILE else Mouth.TINY
             p.blush = 0.4f + 0.4f * clamp01((t - 0.70f) / 0.30f)
             p.sy = 1f + 0.025f * sin(t * TAU)
             Flannery.draw(st, p)
+        }    ,
+
+        // ---- 21-40 ----------------------------------------------------------
+
+        // 21
+        AnimSpec("rocket", "Ratty Rocketship", "3… 2… 1…", 0xFFEFF3FA.toInt(), 44, 20) { st, t ->
+            val p = base(st)
+            val ground = st.h * 0.52f
+            val charge = window(t, 0.00f, 0.46f)
+            val crouch = window(t, 0.46f, 0.56f)
+            val launch = window(t, 0.56f, 1.00f)
+
+            if (launch > 0f) {
+                // eased so he leaves the pad slowly and keeps building
+                val rise = launch * launch * (0.30f + 0.70f * launch)
+                p.cy = ground - st.u * 1.15f * rise
+                p.sy = 1f + 0.13f * launch
+                p.sx = 1f - 0.08f * launch
+                p.eyes = Eyes.WIDE
+                p.shadow = 0f
+                val jet = st.u * (0.22f + 0.58f * ease(clamp01(launch * 2.2f)))
+                Props.flameJet(st, p.cx, p.cy + st.u * 0.30f, st.u * 0.155f, jet,
+                    (t * 44f).toInt(), 1f)
+                for (i in 0 until 8) {
+                    val f = (rnd(i * 5) + launch * 1.4f) % 1f
+                    st.circle(p.cx + st.u * 0.22f * (rnd(i) - 0.5f),
+                        ground + st.u * (0.18f + 0.55f * f), st.u * 0.05f * (1f - f) + st.u * 0.02f,
+                        withAlpha(0xFFCBD3D8.toInt(), 0.5f * (1f - f)))
+                }
+            } else if (crouch > 0f) {
+                p.cy = ground + st.u * 0.02f * crouch
+                p.sy = 1f - 0.10f * pulse(crouch)
+                p.sx = 1f + 0.10f * pulse(crouch)
+                p.eyes = Eyes.BLINK
+                Props.flameJet(st, p.cx, p.cy + st.u * 0.30f, st.u * 0.125f, st.u * 0.16f,
+                    (t * 44f).toInt(), 0.9f)
+            } else {
+                // shaking harder and harder on the pad
+                val k = charge * charge
+                p.cx += st.u * 0.020f * k * sin(t * 150f)
+                p.cy = ground + st.u * 0.008f * k * sin(t * 121f)
+                p.sx = 1f + 0.03f * k
+                p.sy = 1f - 0.03f * k
+                p.eyes = if (charge > 0.55f) Eyes.WIDE else Eyes.OPEN
+                Props.flameJet(st, p.cx, p.cy + st.u * 0.30f, st.u * 0.10f * k,
+                    st.u * 0.18f * k, (t * 44f).toInt(), k)
+            }
+            Flannery.draw(st, p)
+        },
+
+        // 22
+        AnimSpec("rarf", "RARF!!!!", "small guy, big opinion", 0xFFFFF0EC.toInt(), 36, 20) { st, t ->
+            val p = base(st)
+            val wind = window(t, 0.00f, 0.22f)
+            val bark = window(t, 0.22f, 0.62f)
+
+            if (bark > 0f) {
+                val hit = pulse(bark)
+                p.sx = 1f + 0.13f * hit
+                p.sy = 1f - 0.11f * hit
+                p.cx += st.u * 0.016f * sin(t * 150f) * hit
+                p.cy += st.u * 0.020f * hit
+            } else {
+                p.sy = 1f + 0.07f * wind
+                p.sx = 1f - 0.05f * wind
+                p.cy -= st.u * 0.02f * wind
+            }
+            p.eyes = Eyes.WIDE
+            p.brows = Brows.ANGRY
+            Flannery.draw(st, p)
+
+            if (bark > 0f) {
+                val pop = ease(clamp01(bark * 3.2f))
+                val fade = if (bark > 0.72f) 1f - (bark - 0.72f) / 0.28f else 1f
+                // impact rays behind the shout
+                for (i in 0 until 10) {
+                    val a = i / 10f * TAU
+                    val d0 = st.u * (0.30f + 0.06f * pop)
+                    val d1 = d0 + st.u * 0.10f * pop
+                    val pt = st.stroke(withAlpha(0xFFE8613F.toInt(), 0.45f * fade), st.u * 0.012f)
+                    st.canvas.drawLine(st.w * 0.5f + cos(a) * d0, st.h * 0.28f + sin(a) * d0 * 0.6f,
+                        st.w * 0.5f + cos(a) * d1, st.h * 0.28f + sin(a) * d1 * 0.6f, pt)
+                }
+                Props.shout(st, st.w * 0.5f, st.h * 0.30f, st.u * (0.105f + 0.030f * pop),
+                    "RARF!!!!", 0xFFE8452A.toInt(), Hue.CREAM, fade)
+            }
+        },
+
+        // 23
+        AnimSpec("zoomies", "Zoomies", "he has the zoomies", 0xFFF2FAF4.toInt(), 30, 22) { st, t ->
+            val p = base(st)
+            val sweep = sin(t * TAU)
+            p.cx = st.w * 0.5f + st.u * 0.30f * sweep
+            p.rot = -12f * sweep
+            p.cy -= st.u * 0.02f * kotlin.math.abs(sweep)
+            p.eyes = Eyes.HAPPY
+            for (i in 0 until 5) {
+                val dir = if (sweep > 0f) -1f else 1f
+                Props.speedLine(st, p.cx + dir * st.u * (0.20f + 0.06f * i),
+                    p.cy - st.u * 0.14f + st.u * 0.07f * i,
+                    dir * st.u * 0.16f, st.u * 0.012f, 1f - i * 0.16f)
+            }
+            Flannery.draw(st, p)
+        },
+
+        // 24
+        AnimSpec("hug", "Squish Hug", "squeezed", 0xFFFFF0F4.toInt(), 30, 20) { st, t ->
+            val p = base(st)
+            val sq = pulse(window(t, 0.10f, 0.70f))
+            p.sx = 1f + 0.20f * sq
+            p.sy = 1f - 0.16f * sq
+            p.cy += st.u * 0.03f * sq
+            p.eyes = Eyes.HAPPY
+            p.blush = 0.5f + 0.5f * sq
+            Flannery.draw(st, p)
+            for (i in 0 until 5) {
+                val ht = (t + i / 5f) % 1f
+                Props.heart(st, p.cx + st.u * 0.26f * sin(ht * 3.6f + i),
+                    p.cy - st.u * (0.10f + 0.48f * ht), st.u * 0.036f,
+                    withAlpha(Hue.PINK, clamp01(1.5f * (1f - ht)) * sq))
+            }
+        },
+
+        // 25
+        AnimSpec("coffee", "Coffee Buzz", "one too many", 0xFFF7F0E8.toInt(), 30, 24) { st, t ->
+            val p = base(st)
+            p.cx += st.u * 0.010f * sin(t * 190f)
+            p.cy += st.u * 0.007f * sin(t * 233f)
+            p.rot = 3f * sin(t * 170f)
+            p.eyes = Eyes.WIDE
+            p.attach = { s, hw, _ -> Props.cookie(s, hw * 0.92f, hw * 0.10f, hw * 0.20f, 0f) }
+            Flannery.draw(st, p)
+            for (i in 0 until 3) {
+                val st2 = (t * 1.6f + i / 3f) % 1f
+                st.circle(p.cx + st.u * 0.30f + st.u * 0.03f * sin(st2 * 7f),
+                    p.cy - st.u * (0.02f + 0.24f * st2), st.u * 0.022f * (1f - st2 * 0.4f),
+                    withAlpha(Hue.WHITE, 0.7f * (1f - st2)))
+            }
+        },
+
+        // 26
+        AnimSpec("boo", "Boo!", "spooky little guy", 0xFF232838.toInt(), 36, 18) { st, t ->
+            val p = base(st)
+            p.cy -= st.u * 0.04f * sin(t * TAU)
+            p.rot = 4f * sin(t * TAU)
+            p.alpha = 0.55f + 0.15f * sin(t * TAU)
+            p.shadow = 0f
+            p.eyes = Eyes.WIDE
+            Props.glow(st, p.cx, p.cy, st.u * 0.62f, 0xFF9FD6FF.toInt(), 0.7f)
+            Flannery.draw(st, p)
+            val boo = window(t, 0.55f, 0.95f)
+            if (boo > 0f) {
+                Props.shout(st, st.w * 0.72f, st.h * 0.26f, st.u * 0.11f, "boo",
+                    0xFFDCE8FF.toInt(), 0xFF2A3145.toInt(), clamp01(1.6f * (1f - boo)))
+            }
+        },
+
+        // 27
+        AnimSpec("trampoline", "Trampoline", "higher! higher!", 0xFFEFF7FF.toInt(), 30, 22) { st, t ->
+            val p = base(st)
+            val air = sin(clamp01(t) * 3.14159265f * 2f)
+            val up = kotlin.math.abs(air)
+            p.cy = st.h * 0.56f - st.u * 0.34f * up
+            val land = 1f - up
+            p.sx = 1f + 0.22f * land * land * land
+            p.sy = 1f - 0.22f * land * land * land + 0.14f * up
+            p.eyes = Eyes.HAPPY
+            p.shadow = 0.3f + 0.7f * land
+            val pt = st.stroke(withAlpha(Hue.INK, 0.25f), st.u * 0.012f)
+            val sag = st.u * 0.03f * land
+            st.rect.set(st.w * 0.5f - st.u * 0.34f, st.h * 0.72f - st.u * 0.03f + sag,
+                st.w * 0.5f + st.u * 0.34f, st.h * 0.72f + st.u * 0.03f + sag)
+            st.canvas.drawOval(st.rect, pt)
+            Flannery.draw(st, p)
+        },
+
+        // 28
+        AnimSpec("snowball", "Snowball", "gathering momentum", 0xFFF3F8FC.toInt(), 36, 20) { st, t ->
+            val p = base(st)
+            p.cx = -st.u * 0.36f + (st.w + st.u * 0.72f) * t
+            p.size = st.u * (0.42f + 0.34f * t)
+            p.rot = t * 540f
+            p.eyes = Eyes.HAPPY
+            for (i in 0 until 10) {
+                val ft = (t + rnd(i)) % 1f
+                Props.snowflake(st, st.w * rnd(i * 11), (st.h + st.u * 0.1f) * ft,
+                    st.u * 0.016f, withAlpha(Hue.WHITE, 0.85f))
+            }
+            Flannery.draw(st, p)
+        },
+
+        // 29
+        AnimSpec("windy", "Windy Day", "hold on", 0xFFF4F7EE.toInt(), 30, 20) { st, t ->
+            val p = base(st)
+            val gust = 0.6f + 0.4f * sin(t * TAU * 2f)
+            p.rot = -13f * gust
+            p.sx = 1f + 0.05f * gust
+            p.eyes = Eyes.BLINK
+            Flannery.draw(st, p)
+            val leaves = intArrayOf(0xFFD9A15A.toInt(), 0xFFC8763C.toInt(), 0xFFB9C46A.toInt())
+            for (i in 0 until 9) {
+                val lt = (t * 1.5f + rnd(i)) % 1f
+                Props.leaf(st, -st.u * 0.1f + (st.w + st.u * 0.2f) * lt,
+                    st.h * (0.18f + 0.6f * rnd(i * 7)) + st.u * 0.06f * sin(lt * 9f + i),
+                    st.u * 0.030f, lt * 420f + i * 40f,
+                    withAlpha(leaves[i % 3], 0.9f))
+            }
+        },
+
+        // 30
+        AnimSpec("sunbathe", "Sunbathing", "vitamin D", 0xFFFFF6E2.toInt(), 36, 16) { st, t ->
+            val p = base(st)
+            p.cy += st.u * 0.012f * sin(t * TAU)
+            p.rot = 2f * sin(t * TAU)
+            p.eyes = Eyes.OPEN
+            Props.sun(st, st.w * 0.80f, st.h * 0.18f, st.u * 0.09f, t * 1.6f)
+            p.attach = { s, hw, hh ->
+                Props.sunglasses(s, hw, 0f, -hh * 0.14f, hw * 0.11f)
+            }
+            Flannery.draw(st, p)
+        },
+
+        // 31
+        AnimSpec("zap", "Static Shock", "bzzt", 0xFFFBF7E4.toInt(), 30, 24) { st, t ->
+            val p = base(st)
+            val z = window(t, 0.20f, 0.55f)
+            p.cx += st.u * 0.012f * sin(t * 210f) * (if (z > 0f) 1f else 0.25f)
+            p.cy += st.u * 0.008f * sin(t * 260f)
+            p.eyes = if (z > 0f) Eyes.DIZZY else Eyes.WIDE
+            p.brows = if (z > 0f) Brows.RAISED else Brows.NONE
+            Flannery.draw(st, p)
+            if (z > 0f) {
+                for (i in 0 until 4) {
+                    val a = -2.4f + i * 0.55f
+                    val d = st.u * 0.36f
+                    Props.bolt(st, p.cx + cos(a) * d, p.cy + sin(a) * d,
+                        st.u * 0.055f, pulse(z))
+                }
+            }
+        },
+
+        // 32
+        AnimSpec("levitate", "Levitate", "inner peace", 0xFFF1F0FB.toInt(), 36, 16) { st, t ->
+            val p = base(st)
+            val f = 0.5f + 0.5f * sin(t * TAU)
+            p.cy -= st.u * 0.10f * f
+            p.shadow = 0.25f + 0.35f * (1f - f)
+            p.eyes = Eyes.SLEEPY
+            Props.glow(st, p.cx, p.cy, st.u * 0.66f, 0xFFB9A6FF.toInt(), 0.55f + 0.35f * f)
+            val pt = st.stroke(withAlpha(0xFFB9A6FF.toInt(), 0.45f), st.u * 0.010f)
+            st.rect.set(p.cx - st.u * 0.34f, p.cy + st.u * (0.30f + 0.05f * f) - st.u * 0.05f,
+                p.cx + st.u * 0.34f, p.cy + st.u * (0.30f + 0.05f * f) + st.u * 0.05f)
+            st.canvas.drawOval(st.rect, pt)
+            Flannery.draw(st, p)
+        },
+
+        // 33
+        AnimSpec("fireworks", "Fireworks", "ooooh", 0xFF20263A.toInt(), 44, 18) { st, t ->
+            val p = base(st)
+            p.gazeY = -0.8f
+            p.eyes = Eyes.WIDE
+            val colors = intArrayOf(0xFFFF8A9B.toInt(), 0xFFFFE066.toInt(), 0xFF8FD8FF.toInt(), 0xFFC7A6FF.toInt())
+            for (i in 0 until 4) {
+                val ft = (t * 1.4f + i * 0.27f) % 1f
+                Props.firework(st, st.w * (0.20f + 0.20f * i), st.h * (0.16f + 0.10f * rnd(i * 5)),
+                    st.u * 0.20f, ft, colors[i])
+            }
+            Flannery.draw(st, p)
+        },
+
+        // 34
+        AnimSpec("birthday", "Birthday", "make a wish", 0xFFFFF3F7.toInt(), 36, 18) { st, t ->
+            val p = base(st)
+            p.cy -= st.u * 0.015f * sin(t * TAU * 2f)
+            p.eyes = Eyes.HAPPY
+            p.blush = 0.6f
+            Flannery.draw(st, p)
+            Props.cake(st, st.w * 0.5f, st.h * 0.80f, st.u * 0.11f, sin(t * 22f))
+            for (i in 0 until 10) {
+                val ct = (t + rnd(i)) % 1f
+                Props.confetti(st, st.w * rnd(i * 7), -st.u * 0.08f + (st.h + st.u * 0.16f) * ct,
+                    st.u * 0.038f, ct * 460f, withAlpha(
+                        intArrayOf(Hue.PINK, Hue.GOLD, 0xFF8FD8FF.toInt())[i % 3],
+                        clamp01(1.4f - ct)))
+            }
+        },
+
+        // 35
+        AnimSpec("puddle", "Puddle Splash", "worth it", 0xFFEEF5F9.toInt(), 36, 20) { st, t ->
+            val p = base(st)
+            val jump = window(t, 0.00f, 0.42f)
+            val land = window(t, 0.42f, 1.00f)
+            if (jump > 0f) {
+                p.cy = st.h * 0.52f - st.u * 0.26f * pulse(jump)
+                p.sy = 1f + 0.10f * pulse(jump)
+                p.eyes = Eyes.HAPPY
+                p.shadow = 0.4f
+            } else {
+                val k = 1f - ease(clamp01(land * 2.5f))
+                p.cy = st.h * 0.52f
+                p.sx = 1f + 0.18f * k
+                p.sy = 1f - 0.18f * k
+                p.eyes = Eyes.HAPPY
+            }
+            Flannery.draw(st, p)
+            if (land > 0f) Props.splash(st, p.cx, st.h * 0.74f, st.u * 0.26f, clamp01(land * 1.8f))
+        },
+
+        // 36
+        AnimSpec("thinking", "Thinking", "hmm", 0xFFF5F5F0.toInt(), 36, 14) { st, t ->
+            val p = base(st)
+            p.rot = 6f * sin(t * TAU)
+            p.gazeX = 0.6f * sin(t * TAU)
+            p.gazeY = -0.4f
+            p.eyes = Eyes.OPEN
+            Flannery.draw(st, p)
+            Props.thoughtBubble(st, st.w * 0.74f, st.h * 0.24f, st.u * 0.11f,
+                ((t * 4f).toInt() % 4))
+        },
+
+        // 37
+        AnimSpec("heartbeat", "Heartbeat", "ba-dum", 0xFFFFF1F2.toInt(), 30, 20) { st, t ->
+            val p = base(st)
+            val beat = pulse(window(t, 0.00f, 0.18f)) + 0.6f * pulse(window(t, 0.22f, 0.38f))
+            val k = 1f + 0.055f * beat
+            p.sx = k; p.sy = k
+            p.eyes = Eyes.HAPPY
+            p.blush = 0.4f + 0.4f * beat
+            Props.heart(st, st.w * 0.5f, st.h * 0.50f, st.u * (0.44f + 0.05f * beat),
+                withAlpha(Hue.PINK, 0.14f + 0.10f * beat))
+            Flannery.draw(st, p)
+        },
+
+        // 38
+        AnimSpec("starstruck", "Star Struck", "seeing stars", 0xFFF8F4EA.toInt(), 36, 18) { st, t ->
+            val p = base(st)
+            p.rot = 5f * sin(t * TAU)
+            p.eyes = Eyes.DIZZY
+            Flannery.draw(st, p)
+            for (i in 0 until 5) {
+                val a = t * TAU + i / 5f * TAU
+                Props.star(st, p.cx + cos(a) * st.u * 0.26f,
+                    p.cy - st.u * 0.34f + sin(a) * st.u * 0.07f,
+                    st.u * 0.038f * (0.7f + 0.3f * sin(a)), Hue.GOLD)
+            }
+        },
+
+        // 39
+        AnimSpec("sneeze", "Sneeze", "aa-aa-CHOO", 0xFFF6F2FB.toInt(), 36, 20) { st, t ->
+            val p = base(st)
+            val wind = window(t, 0.00f, 0.44f)
+            val blast = window(t, 0.44f, 0.78f)
+            if (blast > 0f) {
+                val hit = pulse(blast)
+                p.cy += st.u * 0.03f * hit
+                p.sx = 1f + 0.14f * hit
+                p.sy = 1f - 0.12f * hit
+                p.rot = 8f * hit
+                p.eyes = Eyes.BLINK
+            } else {
+                p.cy -= st.u * 0.04f * wind
+                p.sy = 1f + 0.09f * wind
+                p.sx = 1f - 0.06f * wind
+                p.eyes = if (wind > 0.6f) Eyes.BLINK else Eyes.WIDE
+                p.brows = Brows.SAD
+            }
+            Flannery.draw(st, p)
+            if (blast > 0f) {
+                val a = clamp01(1.4f * (1f - blast))
+                for (i in 0 until 8) {
+                    val ang = 0.7f + i * 0.16f
+                    val d = st.u * (0.24f + 0.34f * ease(blast))
+                    st.circle(p.cx + cos(ang) * d, p.cy + sin(ang) * d * 0.7f,
+                        st.u * 0.035f * a, withAlpha(Hue.WHITE, a * 0.9f))
+                }
+                Props.shout(st, st.w * 0.30f, st.h * 0.24f, st.u * 0.09f, "achoo",
+                    0xFF7C6BB0.toInt(), Hue.CREAM, a)
+            }
+        },
+
+        // 40
+        AnimSpec("disco", "Disco", "certified mover", 0xFF2A2340.toInt(), 36, 20) { st, t ->
+            val p = base(st)
+            val s2 = sin(t * TAU * 2f)
+            p.rot = 12f * s2
+            p.cx += st.u * 0.05f * s2
+            p.cy -= st.u * 0.035f * kotlin.math.abs(s2)
+            p.eyes = Eyes.HAPPY
+            val colors = intArrayOf(0xFFFF6FA5.toInt(), 0xFF6FD8FF.toInt(), 0xFFFFD86F.toInt(), 0xFFA98CFF.toInt())
+            for (i in 0 until 4) {
+                val a = t * TAU + i / 4f * TAU
+                Props.glow(st, st.w * 0.5f + cos(a) * st.u * 0.34f,
+                    st.h * 0.48f + sin(a) * st.u * 0.22f, st.u * 0.30f, colors[i], 0.55f)
+            }
+            Flannery.draw(st, p)
+            for (i in 0 until 6) {
+                val nt = (t + i / 6f) % 1f
+                Props.note(st, st.w * (0.12f + 0.76f * rnd(i * 3)),
+                    st.h * 0.9f - st.h * 0.8f * nt, st.u * 0.05f,
+                    withAlpha(colors[i % 4], clamp01(1.4f * (1f - nt))))
+            }
         }
+
     )
 
     fun byId(id: String): AnimSpec = all.firstOrNull { it.id == id } ?: all[0]

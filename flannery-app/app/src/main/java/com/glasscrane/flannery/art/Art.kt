@@ -63,7 +63,7 @@ object Hue {
 }
 
 enum class Eyes { OPEN, BLINK, HAPPY, SLEEPY, WIDE, HEART, STAR, DIZZY }
-enum class Mouth { SQUIGGLE, SMILE, OPEN, WIDE_OPEN, BLEP, FROWN, TINY, YAWN }
+enum class Brows { NONE, ANGRY, SAD, RAISED }
 
 /** The artwork itself. Loaded once and handed to the renderer. */
 object Sprite {
@@ -88,18 +88,19 @@ class Pose {
     var sx = 1f
     var sy = 1f
     var eyes = Eyes.OPEN
-    var mouth = Mouth.SQUIGGLE
+    var brows = Brows.NONE
     var gazeX = 0f
     var gazeY = 0f
     var blush = 0f
+    var alpha = 1f
     var shadow = 1f
     var attach: ((Stage, Float, Float) -> Unit)? = null
 
     fun reset(cx: Float, cy: Float, size: Float) {
         this.cx = cx; this.cy = cy; this.size = size
         rot = 0f; sx = 1f; sy = 1f
-        eyes = Eyes.OPEN; mouth = Mouth.SQUIGGLE
-        gazeX = 0f; gazeY = 0f; blush = 0f
+        eyes = Eyes.OPEN; brows = Brows.NONE
+        gazeX = 0f; gazeY = 0f; blush = 0f; alpha = 1f
         shadow = 1f; attach = null
     }
 }
@@ -157,11 +158,13 @@ object Flannery {
         if (p.sx != 1f || p.sy != 1f) c.scale(p.sx, p.sy)
 
         st.rect.set(-half, -half, half, half)
+        st.bmpPaint.alpha = (clamp01(p.alpha) * 255f).toInt()
         c.drawBitmap(bmp, null, st.rect, st.bmpPaint)
+        st.bmpPaint.alpha = 255
 
         val s = p.size
         drawEyes(st, p, s)
-        drawMouth(st, p, s)
+        drawBrows(st, p, s)
 
         if (p.blush > 0.01f) {
             val ba = 0.30f * p.blush
@@ -184,6 +187,36 @@ object Flannery {
             st.circle(x, y, r * (0.85f + 0.55f * f), withAlpha(color, 0.30f))
         }
         st.circle(x, y, r * 0.9f, color)
+    }
+
+    /** Eyebrows are new marks on fur, so they draw straight over the artwork. */
+    private fun drawBrows(st: Stage, p: Pose, s: Float) {
+        if (p.brows == Brows.NONE) return
+        val r = Sprite.EYE_R * s
+        val xs = floatArrayOf(lx(Sprite.EYE_LX, s), lx(Sprite.EYE_RX, s))
+        val ys = floatArrayOf(ly(Sprite.EYE_LY, s), ly(Sprite.EYE_RY, s))
+        for (i in 0..1) {
+            val bx = xs[i]
+            val by = ys[i] - r * 1.70f
+            val inner = if (i == 0) 1f else -1f
+            st.path.reset()
+            when (p.brows) {
+                Brows.ANGRY -> {
+                    st.path.moveTo(bx + inner * r * 1.25f, by + r * 0.70f)
+                    st.path.quadTo(bx, by + r * 0.10f, bx - inner * r * 1.10f, by - r * 0.05f)
+                }
+                Brows.SAD -> {
+                    st.path.moveTo(bx + inner * r * 1.20f, by - r * 0.10f)
+                    st.path.quadTo(bx, by + r * 0.20f, bx - inner * r * 1.10f, by + r * 0.60f)
+                }
+                Brows.RAISED -> {
+                    st.path.moveTo(bx - r * 1.10f, by + r * 0.30f)
+                    st.path.quadTo(bx, by - r * 0.55f, bx + r * 1.10f, by + r * 0.30f)
+                }
+                Brows.NONE -> return
+            }
+            st.canvas.drawPath(st.path, st.stroke(Hue.INK, r * 0.30f))
+        }
     }
 
     private fun drawEyes(st: Stage, p: Pose, s: Float) {
@@ -257,43 +290,4 @@ object Flannery {
         }
     }
 
-    private fun drawMouth(st: Stage, p: Pose, s: Float) {
-        // His painted mouth already reads as a soft smile, so the resting
-        // states leave the artwork alone.
-        if (p.mouth == Mouth.SQUIGGLE || p.mouth == Mouth.SMILE || p.mouth == Mouth.TINY) return
-
-        val x = lx(Sprite.MOUTH_X, s)
-        val y = ly(Sprite.MOUTH_Y, s)
-        val m = Sprite.MOUTH_W * s
-        when (p.mouth) {
-            Mouth.OPEN -> {
-                patch(st, x, y, m * 0.62f, Hue.FUR_MOUTH)
-                st.oval(x, y + m * 0.10f, m * 0.30f, m * 0.30f, Hue.INK)
-                st.oval(x, y + m * 0.20f, m * 0.18f, m * 0.13f, Hue.PINK)
-            }
-            Mouth.WIDE_OPEN -> {
-                patch(st, x, y, m * 0.70f, Hue.FUR_MOUTH)
-                st.oval(x, y + m * 0.16f, m * 0.42f, m * 0.46f, Hue.INK)
-                st.oval(x, y + m * 0.40f, m * 0.25f, m * 0.19f, Hue.PINK)
-            }
-            Mouth.YAWN -> {
-                patch(st, x, y, m * 0.72f, Hue.FUR_MOUTH)
-                st.oval(x, y + m * 0.34f, m * 0.36f, m * 0.68f, Hue.INK)
-                st.oval(x, y + m * 0.72f, m * 0.22f, m * 0.24f, Hue.PINK)
-            }
-            Mouth.FROWN -> {
-                patch(st, x, y, m * 0.66f, Hue.FUR_MOUTH)
-                st.path.reset()
-                st.path.moveTo(x - m * 0.40f, y + m * 0.18f)
-                st.path.quadTo(x, y - m * 0.26f, x + m * 0.40f, y + m * 0.18f)
-                st.canvas.drawPath(st.path, st.stroke(Hue.INK, m * 0.11f))
-            }
-            // tongue hangs below his own mouth — no patch needed
-            Mouth.BLEP -> {
-                st.rect.set(x - m * 0.15f, y + m * 0.06f, x + m * 0.15f, y + m * 0.52f)
-                st.canvas.drawRoundRect(st.rect, m * 0.15f, m * 0.15f, st.fill(Hue.PINK))
-            }
-            else -> Unit
-        }
-    }
 }
