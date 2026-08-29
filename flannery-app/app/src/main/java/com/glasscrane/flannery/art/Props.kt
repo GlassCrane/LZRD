@@ -172,8 +172,17 @@ object Props {
         }
     }
 
+    /** Outlined so it reads on light and dark grounds alike. */
     fun zzz(st: Stage, x: Float, y: Float, size: Float, alpha: Float) {
         textPaint.textSize = size
+        val ring = size * 0.09f
+        textPaint.color = withAlpha(Hue.CREAM, alpha)
+        var i = 0
+        while (i < 8) {
+            val a = i / 8f * TAU
+            st.canvas.drawText("Z", x + cos(a) * ring, y + sin(a) * ring, textPaint)
+            i++
+        }
         textPaint.color = withAlpha(Hue.INK, alpha)
         st.canvas.drawText("Z", x, y, textPaint)
     }
@@ -237,7 +246,7 @@ object Props {
     }
 
     fun speedLine(st: Stage, x: Float, y: Float, len: Float, thick: Float, alpha: Float) {
-        val pt = st.stroke(withAlpha(Hue.INK, alpha * 0.35f), thick)
+        val pt = st.stroke(withAlpha(Hue.MINT_DEEP, alpha * 0.8f), thick)
         st.canvas.drawLine(x, y, x + len, y, pt)
     }
 

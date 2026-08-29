@@ -636,7 +636,7 @@ object Animations {
             p.sy = 1f - 0.22f * land * land * land + 0.14f * up
             p.eyes = Eyes.HAPPY
             p.shadow = 0.3f + 0.7f * land
-            val pt = st.stroke(withAlpha(Hue.INK, 0.25f), st.u * 0.012f)
+            val pt = st.stroke(withAlpha(Hue.MINT_DEEP, 0.75f), st.u * 0.012f)
             val sag = st.u * 0.03f * land
             st.rect.set(st.w * 0.5f - st.u * 0.34f, st.h * 0.72f - st.u * 0.03f + sag,
                 st.w * 0.5f + st.u * 0.34f, st.h * 0.72f + st.u * 0.03f + sag)

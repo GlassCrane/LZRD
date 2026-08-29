@@ -7,87 +7,98 @@
     android:fitsSystemWindows="true"
     android:gravity="center_horizontal">
 
-    <TextView
-        android:id="@+id/backBtn"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="14dp"
-        android:padding="10dp"
-        android:text="←"
-        android:textColor="@color/mint"
-        android:textSize="22sp"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        android:contentDescription="@string/back" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="10dp"
+        android:paddingEnd="18dp"
+        android:paddingTop="10dp">
+
+        <TextView
+            android:id="@+id/backBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="@string/back_glyph"
+            android:textColor="@color/mint"
+            android:textSize="17sp"
+            android:fontFamily="monospace"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/back" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@color/line" />
+
+        <TextView
+            android:id="@+id/indexReadout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/mint_dim"
+            android:textSize="11sp"
+            android:fontFamily="monospace" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/detailTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="10dp"
         android:textColor="@color/on_dark"
-        android:textSize="27sp"
-        android:letterSpacing="-0.01"
-        android:fontFamily="sans-serif-black" />
+        android:textSize="22sp"
+        android:letterSpacing="0.12"
+        android:fontFamily="monospace"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/detailBlurb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
+        android:layout_marginTop="4dp"
         android:textColor="@color/mint_deep"
-        android:textSize="13sp"
-        android:letterSpacing="0.05" />
+        android:textSize="12sp"
+        android:letterSpacing="0.08"
+        android:fontFamily="monospace" />
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:clipChildren="false">
-
-    <FrameLayout
-        android:id="@+id/stageMount"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="26dp"
-        android:layout_marginEnd="26dp"
-        android:layout_marginTop="18dp"
-        android:layout_marginBottom="6dp"
-        android:background="@drawable/bg_paper_card"
-        android:paddingStart="9dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="9dp"
-        android:paddingBottom="13dp">
+        android:layout_marginStart="22dp"
+        android:layout_marginEnd="22dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="6dp">
 
         <com.glasscrane.flannery.ui.FlanneryView
             android:id="@+id/stage"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_margin="6dp" />
 
         <View
+            android:id="@+id/scanLine"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/bg_paper_tile"
-            android:alpha="0.5" />
-    </FrameLayout>
+            android:layout_height="2dp"
+            android:background="@color/line_bright" />
 
-    <View
-        android:layout_width="58dp"
-        android:layout_height="18dp"
-        android:layout_gravity="center_horizontal|top"
-        android:layout_marginTop="10dp"
-        android:rotation="3"
-        android:background="@drawable/bg_tape" />
+        <com.glasscrane.flannery.ui.HudFrameView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </FrameLayout>
 
     <ProgressBar
         android:id="@+id/progress"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="200dp"
-        android:layout_height="6dp"
+        android:layout_width="210dp"
+        android:layout_height="4dp"
         android:layout_marginTop="10dp"
         android:max="100"
         android:progressDrawable="@drawable/progress_mint"
@@ -100,8 +111,9 @@
         android:layout_marginTop="5dp"
         android:text="@string/making_gif"
         android:textColor="@color/on_dark_soft"
-        android:textSize="12sp"
-        android:letterSpacing="0.05"
+        android:textSize="11sp"
+        android:letterSpacing="0.10"
+        android:fontFamily="monospace"
         android:visibility="invisible" />
 
     <LinearLayout
@@ -109,31 +121,34 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="14dp"
-        android:layout_marginBottom="30dp">
+        android:layout_marginBottom="26dp">
 
         <Button
             android:id="@+id/saveBtn"
             android:layout_width="wrap_content"
-            android:layout_height="54dp"
-            android:minWidth="112dp"
+            android:layout_height="50dp"
+            android:minWidth="108dp"
             android:background="@drawable/bg_btn_ghost"
             android:text="@string/save_gif"
-            android:textAllCaps="false"
+            android:textAllCaps="true"
             android:textColor="@color/mint"
-            android:textSize="15sp"
-            android:fontFamily="sans-serif-black" />
+            android:textSize="13sp"
+            android:letterSpacing="0.10"
+            android:fontFamily="monospace" />
 
         <Button
             android:id="@+id/shareBtn"
             android:layout_width="wrap_content"
-            android:layout_height="54dp"
-            android:layout_marginStart="14dp"
-            android:minWidth="158dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="12dp"
+            android:minWidth="152dp"
             android:background="@drawable/bg_btn_primary"
             android:text="@string/share_gif"
-            android:textAllCaps="false"
+            android:textAllCaps="true"
             android:textColor="@color/mint_ink"
-            android:textSize="15sp"
-            android:fontFamily="sans-serif-black" />
+            android:textSize="13sp"
+            android:letterSpacing="0.10"
+            android:fontFamily="monospace"
+            android:textStyle="bold" />
     </LinearLayout>
 </LinearLayout>

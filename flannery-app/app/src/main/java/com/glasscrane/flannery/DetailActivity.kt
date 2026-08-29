@@ -1,5 +1,6 @@
 package com.glasscrane.flannery
 
+import android.animation.ValueAnimator
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -7,6 +8,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.view.animation.LinearInterpolator
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.glasscrane.flannery.anim.AnimSpec
@@ -34,6 +36,7 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var saveBtn: Button
 
     private var busy = false
+    private var scanAnim: ValueAnimator? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +50,25 @@ class DetailActivity : AppCompatActivity() {
         findViewById<FlanneryView>(R.id.stage).setAnimation(spec)
 
         findViewById<TextView>(R.id.backBtn).setOnClickListener { finish() }
+
+        val idx = Animations.all.indexOfFirst { it.id == spec.id } + 1
+        findViewById<TextView>(R.id.indexReadout).text =
+            "MOOD %02d/%02d".format(idx, Animations.all.size)
+
+        // slow scan line drifting down the stage
+        val scan = findViewById<View>(R.id.scanLine)
+        val host = scan.parent as View
+        host.post {
+            scanAnim = ValueAnimator.ofFloat(0f, 1f).apply {
+                duration = 5200
+                repeatCount = ValueAnimator.INFINITE
+                interpolator = LinearInterpolator()
+                addUpdateListener { a ->
+                    scan.translationY = (host.height - scan.height) * (a.animatedValue as Float)
+                }
+                start()
+            }
+        }
 
         progress = findViewById(R.id.progress)
         progressLabel = findViewById(R.id.progressLabel)
@@ -111,6 +133,7 @@ class DetailActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        scanAnim?.cancel()
         io.shutdownNow()
     }
 }

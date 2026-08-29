@@ -1,24 +1,19 @@
 <resources>
-    <!-- Dark papercraft: near-black ground, light paper cutouts, Flannery's
-         own blue-green (#ABD2C3, sampled from the artwork) as the accent. -->
-    <color name="ground">#10141600</color>
-    <color name="ground_solid">#101416</color>
-    <color name="ground_raised">#171D20</color>
-    <color name="ground_deep">#0A0D0F</color>
-
-    <color name="paper">#E4E1D8</color>
-    <color name="paper_hi">#F3F0E7</color>
-    <color name="paper_lo">#CFCBC0</color>
-    <color name="paper_edge">#B4AFA2</color>
+    <!-- Dark HUD: near-black ground, hairline panel strokes, Flannery's own
+         blue-green (#ABD2C3, sampled from the artwork) as the signal colour. -->
+    <color name="ground_solid">#0C1113</color>
+    <color name="ground_raised">#131A1D</color>
+    <color name="panel">#10171A</color>
+    <color name="line">#22302F</color>
+    <color name="line_bright">#59ABD2C3</color>
 
     <color name="mint">#ABD2C3</color>
-    <color name="mint_bright">#C4E6D8</color>
-    <color name="mint_deep">#7FA99B</color>
-    <color name="mint_ink">#16211E</color>
+    <color name="mint_bright">#C9EDDD</color>
+    <color name="mint_deep">#6E9C8C</color>
+    <color name="mint_dim">#3E5A51</color>
+    <color name="mint_ink">#0B1512</color>
 
-    <color name="ink">#23282B</color>
-    <color name="ink_soft">#5C6360</color>
-    <color name="on_dark">#E8EEEA</color>
-    <color name="on_dark_soft">#8C9A95</color>
+    <color name="on_dark">#DEE9E4</color>
+    <color name="on_dark_soft">#7E938B</color>
     <color name="shadow">#05080A</color>
 </resources>

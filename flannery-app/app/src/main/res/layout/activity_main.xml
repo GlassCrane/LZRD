@@ -11,10 +11,10 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="bottom"
-        android:paddingStart="22dp"
-        android:paddingEnd="22dp"
-        android:paddingTop="22dp"
-        android:paddingBottom="14dp">
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="6dp">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -25,20 +25,22 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/app_name"
+                android:text="@string/app_name_display"
                 android:textColor="@color/mint"
-                android:textSize="36sp"
-                android:letterSpacing="-0.02"
-                android:fontFamily="sans-serif-black" />
+                android:textSize="30sp"
+                android:letterSpacing="0.22"
+                android:fontFamily="monospace"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:text="@string/tagline"
+                android:layout_marginTop="2dp"
+                android:text="@string/tagline_display"
                 android:textColor="@color/on_dark_soft"
-                android:textSize="13sp"
-                android:letterSpacing="0.04" />
+                android:textSize="11sp"
+                android:letterSpacing="0.14"
+                android:fontFamily="monospace" />
         </LinearLayout>
 
         <TextView
@@ -46,15 +48,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_chip"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
+            android:paddingStart="9dp"
+            android:paddingEnd="9dp"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:textColor="@color/mint_deep"
-            android:textSize="11sp"
-            android:letterSpacing="0.08"
-            android:fontFamily="sans-serif-medium" />
+            android:textSize="10sp"
+            android:letterSpacing="0.10"
+            android:fontFamily="monospace" />
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/line" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/grid"
@@ -62,8 +72,8 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="28dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="26dp"
         android:scrollbars="none" />
 </LinearLayout>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Dark ground with a tiled paper-fibre overlay. -->
+<!-- Near-black ground with a tiled dot grid. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/ground_solid" />
     <item>

@@ -1,50 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Section divider: tick, label, hairline rule, count readout. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clipChildren="false"
-    android:paddingTop="18dp"
-    android:paddingBottom="4dp">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:background="@drawable/bg_paper_card"
-        android:paddingStart="14dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="9dp"
-        android:paddingBottom="12dp">
-
-        <TextView
-            android:id="@+id/headerTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="@color/ink"
-            android:textSize="14sp"
-            android:letterSpacing="0.14"
-            android:fontFamily="sans-serif-black" />
-
-        <TextView
-            android:id="@+id/headerCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/ink_soft"
-            android:textSize="11sp"
-            android:letterSpacing="0.10"
-            android:fontFamily="sans-serif-medium" />
-    </LinearLayout>
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingTop="22dp"
+    android:paddingBottom="8dp"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp">
 
     <View
-        android:layout_width="44dp"
-        android:layout_height="15dp"
-        android:layout_gravity="start"
-        android:layout_marginStart="26dp"
-        android:layout_marginTop="11dp"
-        android:rotation="-4"
-        android:background="@drawable/bg_tape" />
-</FrameLayout>
+        android:layout_width="7dp"
+        android:layout_height="7dp"
+        android:background="@color/mint" />
+
+    <TextView
+        android:id="@+id/headerTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="9dp"
+        android:textColor="@color/mint"
+        android:textSize="13sp"
+        android:letterSpacing="0.18"
+        android:fontFamily="monospace"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="1"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:background="@color/line" />
+
+    <TextView
+        android:id="@+id/headerCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/mint_deep"
+        android:textSize="11sp"
+        android:fontFamily="monospace" />
+</LinearLayout>

@@ -78,21 +78,18 @@ cd flannery-app
 
 ### Look
 
-Dark papercraft. The ground is near-black under a tiled paper-fibre texture;
-each animation is mounted like a photo on a light paper cutout — hard offset
-shadow, square corners, a strip of mint washi tape, and a hair of rotation, so
-the grid reads as pinned-up paper. The grid is grouped into five sections
-(Quiet Hours, Full of Beans, Soft Feelings, Weather Permitting, Party Tricks),
-each under its own taped-down paper strip. The
-accent is `#ABD2C3` — sampled from Flannery himself, not picked by eye.
+Dark HUD. Near-black ground under a tiled dot grid; each animation floats
+directly on it — the GIFs are transparent, and so is the app's own display of
+them — inside a targeting-reticle frame (hairline border, mint corner
+brackets, mid-edge ticks) drawn in code so the brackets never stretch. Mono
+type throughout, per-mood index readouts, and a slow scan line drifting over
+the detail stage. The accent is `#ABD2C3`, sampled from Flannery himself.
 
-The two grain tiles in `drawable-nodpi/` are generated noise, made seamless by
-averaging wrapped shifts so they repeat without a visible join.
+Props that used to sit on light card grounds are outlined or recoloured so
+they read on dark and light chats alike.
 
-The launcher icon is his face: mint gradient, his eyes, and his mouth. The
-proportions come off the artwork — the mouth is about half the eye spacing and
-sits close under the eyes, which is what makes it read as him rather than as a
-generic smiley.
+The launcher icon is his face: mint gradient, his eyes, and his mouth, with
+proportions taken off the artwork.
 
 ### Signing
 

@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
     /** The grid, flattened: a header row, then that section's cards. */
     private sealed class Row {
         class Header(val title: String, val count: Int) : Row()
-        class Item(val spec: AnimSpec, val indexInSection: Int) : Row()
+        class Item(val spec: AnimSpec, val indexInSection: Int, val sectionSize: Int) : Row()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         val rows = buildList {
             for ((title, ids) in Animations.sections) {
                 add(Row.Header(title, ids.size))
-                ids.forEachIndexed { i, id -> add(Row.Item(Animations.byId(id), i)) }
+                ids.forEachIndexed { i, id -> add(Row.Item(Animations.byId(id), i, ids.size)) }
             }
         }
 
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         class ItemHolder(view: View) : RecyclerView.ViewHolder(view) {
             val preview: FlanneryView = view.findViewById(R.id.preview)
             val label: TextView = view.findViewById(R.id.label)
-            val tape: View = view.findViewById(R.id.tape)
+            val indexTag: TextView = view.findViewById(R.id.indexTag)
         }
 
         override fun getItemViewType(position: Int) =
@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
             val cell = parent.measuredWidth / 2
             v.layoutParams = RecyclerView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                (cell * 1.16f).toInt()
+                (cell * 1.10f).toInt()
             ).apply {
                 val m = (parent.resources.displayMetrics.density * 6).toInt()
                 setMargins(m, m, m, m)
@@ -95,17 +95,13 @@ class MainActivity : AppCompatActivity() {
                 is Row.Header -> {
                     holder as HeaderHolder
                     holder.title.text = row.title.uppercase()
-                    holder.count.text = row.count.toString()
-                    holder.itemView.rotation = if (position % 2 == 0) -0.5f else 0.5f
+                    holder.count.text = "[%02d]".format(row.count)
                 }
                 is Row.Item -> {
                     holder as ItemHolder
                     holder.preview.setAnimation(row.spec)
-                    holder.label.text = row.spec.title
-                    // pinned-up paper: each card and its tape sit a little off true
-                    val lean = if (row.indexInSection % 2 == 0) -1.1f else 1.1f
-                    holder.itemView.rotation = lean
-                    holder.tape.rotation = -lean * 3.5f
+                    holder.label.text = row.spec.title.uppercase()
+                    holder.indexTag.text = "%02d/%02d".format(row.indexInSection + 1, row.sectionSize)
                     holder.itemView.setOnClickListener { onPick(row.spec) }
                 }
             }
