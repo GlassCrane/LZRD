@@ -11,17 +11,33 @@ android {
         applicationId = "com.glasscrane.flannery"
         minSdk = 29
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
+    }
+
+    signingConfigs {
+        // A fixed key, so every build can install over the last one. Android
+        // refuses to update an app whose signature changed, and CI runners have
+        // no debug keystore — they generate a random one per run, which made
+        // every build refuse to update the one before it.
+        create("sideload") {
+            storeFile = rootProject.file("flannery.keystore")
+            storePassword = "flannery"
+            keyAlias = "flannery"
+            keyPassword = "flannery"
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            // Signed with the debug key so `assembleRelease` produces an installable APK
-            // without any secrets in CI. Fine for sideloading; not for Play.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("sideload")
+        }
+        debug {
+            // keeps a debug build installable alongside the real one
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
         }
     }
 

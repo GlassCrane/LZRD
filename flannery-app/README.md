@@ -69,8 +69,22 @@ cd flannery-app
 ./gradlew assembleDebug
 ```
 
-Release builds are signed with the debug key so CI needs no secrets. That's fine
-for sideloading; it would need a real key to go anywhere else.
+### Signing
+
+Builds are signed with `flannery.keystore`, committed alongside the source. That
+is deliberate: Android refuses to install an update whose signature changed, and
+CI runners have no debug keystore — they generate a random one per run, so every
+build refused to update the one before it.
+
+This is a sideload key, not a Play upload key. It is checked into a public repo,
+so treat it as public: anyone holding it could build an APK that installs over
+this one, which needs physical access to the phone to matter. If you would
+rather it were secret, move the keystore into a GitHub Actions secret
+(base64-encoded) and have the workflow write it out before building — say the
+word and I'll switch it over.
+
+Bump `versionCode` in `app/build.gradle.kts` for each release you want to
+install over the last.
 
 - **minSdk 29** (Android 10), targetSdk 34
 - Kotlin, plain Android Views — no Compose, three AndroidX dependencies

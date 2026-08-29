@@ -22,16 +22,20 @@ jobs:
 
       - name: Test and build APKs
         working-directory: flannery-app
-        run: ./gradlew test assembleDebug assembleRelease --no-daemon --stacktrace
+        run: ./gradlew test assembleRelease --no-daemon --stacktrace
 
-      - name: Collect APKs
+      - name: Collect APK
         run: |
           mkdir -p dist
-          find flannery-app/app/build/outputs/apk -name '*.apk' -exec cp {} dist/ \;
+          cp flannery-app/app/build/outputs/apk/release/app-release.apk dist/Flannery.apk
           ls -la dist
+          # Print the signing certificate. This must stay identical between
+          # builds or the APK will not install over the previous one.
+          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort | tail -1)
+          "$APKSIGNER" verify --print-certs dist/Flannery.apk | grep -i "SHA-256 digest"
 
       - uses: actions/upload-artifact@v4
         with:
           name: flannery-apk
-          path: dist/*.apk
+          path: dist/Flannery.apk
           if-no-files-found: error
