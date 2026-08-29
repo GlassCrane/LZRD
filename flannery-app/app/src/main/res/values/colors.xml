@@ -1,9 +1,24 @@
 <resources>
-    <color name="cream">#FBF7EF</color>
-    <color name="cream_dim">#EBE4D6</color>
-    <color name="sage">#B4D1A2</color>
-    <color name="sage_deep">#5C7D4C</color>
-    <color name="ink">#3A2F28</color>
-    <color name="ink_soft">#8A8175</color>
-    <color name="card">#FFFFFF</color>
+    <!-- Dark papercraft: near-black ground, light paper cutouts, Flannery's
+         own blue-green (#ABD2C3, sampled from the artwork) as the accent. -->
+    <color name="ground">#10141600</color>
+    <color name="ground_solid">#101416</color>
+    <color name="ground_raised">#171D20</color>
+    <color name="ground_deep">#0A0D0F</color>
+
+    <color name="paper">#E4E1D8</color>
+    <color name="paper_hi">#F3F0E7</color>
+    <color name="paper_lo">#CFCBC0</color>
+    <color name="paper_edge">#B4AFA2</color>
+
+    <color name="mint">#ABD2C3</color>
+    <color name="mint_bright">#C4E6D8</color>
+    <color name="mint_deep">#7FA99B</color>
+    <color name="mint_ink">#16211E</color>
+
+    <color name="ink">#23282B</color>
+    <color name="ink_soft">#5C6360</color>
+    <color name="on_dark">#E8EEEA</color>
+    <color name="on_dark_soft">#8C9A95</color>
+    <color name="shadow">#05080A</color>
 </resources>

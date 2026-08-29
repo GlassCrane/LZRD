@@ -1,28 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- One animation, mounted like a photo on a paper cutout. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="8dp"
-    android:background="@drawable/bg_card"
+    android:background="@drawable/bg_paper_card"
+    android:paddingStart="7dp"
+    android:paddingEnd="10dp"
+    android:paddingTop="7dp"
+    android:paddingBottom="11dp"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground">
 
-    <com.glasscrane.flannery.ui.FlanneryView
-        android:id="@+id/preview"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1">
+
+        <com.glasscrane.flannery.ui.FlanneryView
+            android:id="@+id/preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_paper_tile"
+            android:alpha="0.55" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="7dp"
         android:gravity="center"
         android:maxLines="1"
         android:ellipsize="end"
         android:textColor="@color/ink"
-        android:textSize="13sp"
-        android:textStyle="bold" />
+        android:textSize="12sp"
+        android:letterSpacing="0.02"
+        android:fontFamily="sans-serif-black" />
 </LinearLayout>

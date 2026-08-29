@@ -46,6 +46,8 @@ class DetailActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.detailBlurb).text = spec.blurb
         findViewById<FlanneryView>(R.id.stage).setAnimation(spec)
 
+        findViewById<TextView>(R.id.backBtn).setOnClickListener { finish() }
+
         progress = findViewById(R.id.progress)
         progressLabel = findViewById(R.id.progressLabel)
         shareBtn = findViewById(R.id.shareBtn)

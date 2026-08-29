@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dark ground with a tiled paper-fibre overlay. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/ground_solid" />
+    <item>
+        <bitmap
+            android:src="@drawable/grain_dark"
+            android:tileModeX="repeat"
+            android:tileModeY="repeat" />
+    </item>
+</layer-list>

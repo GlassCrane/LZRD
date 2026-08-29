@@ -19,6 +19,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        findViewById<TextView>(R.id.countChip).text =
+            getString(R.string.count_label, Animations.all.size).uppercase()
+
         val grid = findViewById<RecyclerView>(R.id.grid)
         grid.layoutManager = GridLayoutManager(this, 2)
         grid.adapter = AnimAdapter(Animations.all) { spec ->
@@ -43,7 +46,7 @@ class MainActivity : AppCompatActivity() {
             val cell = parent.measuredWidth / 2
             view.layoutParams = RecyclerView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                (cell * 1.06f).toInt()
+                (cell * 1.12f).toInt()
             ).apply {
                 val m = (parent.resources.displayMetrics.density * 6).toInt()
                 setMargins(m, m, m, m)
@@ -55,6 +58,8 @@ class MainActivity : AppCompatActivity() {
             val spec = items[position]
             holder.preview.setAnimation(spec)
             holder.label.text = spec.title
+            // a hair off square, so the grid reads as pinned-up paper
+            holder.itemView.rotation = if (position % 2 == 0) -0.9f else 0.9f
             holder.itemView.setOnClickListener { onPick(spec) }
         }
 

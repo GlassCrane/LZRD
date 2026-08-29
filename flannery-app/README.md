@@ -69,6 +69,21 @@ cd flannery-app
 ./gradlew assembleDebug
 ```
 
+### Look
+
+Dark papercraft. The ground is near-black under a tiled paper-fibre texture;
+each animation is mounted like a photo on a light paper cutout, with a hard
+offset shadow and a hair of rotation so the grid reads as pinned-up paper. The
+accent is `#ABD2C3` — sampled from Flannery himself, not picked by eye.
+
+The two grain tiles in `drawable-nodpi/` are generated noise, made seamless by
+averaging wrapped shifts so they repeat without a visible join.
+
+The launcher icon is his face: mint gradient, his eyes, and his mouth. The
+proportions come off the artwork — the mouth is about half the eye spacing and
+sits close under the eyes, which is what makes it read as him rather than as a
+generic smiley.
+
 ### Signing
 
 Builds are signed with `flannery.keystore`, committed alongside the source. That

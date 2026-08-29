@@ -1,10 +1,12 @@
 <resources>
     <string name="app_name">Flannery</string>
     <string name="tagline">tap him. share him.</string>
+    <string name="count_label">%1$d moods</string>
     <string name="share_gif">Share GIF</string>
     <string name="save_gif">Save</string>
     <string name="making_gif">making your gif…</string>
     <string name="share_chooser">Share Flannery</string>
     <string name="saved_to_gallery">Saved to your gallery</string>
     <string name="save_failed">Could not save that one</string>
+    <string name="back">Back</string>
 </resources>

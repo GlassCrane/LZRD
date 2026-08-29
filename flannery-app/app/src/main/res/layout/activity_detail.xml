@@ -3,50 +3,91 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/cream"
+    android:background="@drawable/bg_ground"
     android:fitsSystemWindows="true"
     android:gravity="center_horizontal">
+
+    <TextView
+        android:id="@+id/backBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="14dp"
+        android:padding="10dp"
+        android:text="←"
+        android:textColor="@color/mint"
+        android:textSize="22sp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="@string/back" />
 
     <TextView
         android:id="@+id/detailTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:textColor="@color/ink"
-        android:textSize="26sp"
-        android:textStyle="bold" />
+        android:layout_marginTop="2dp"
+        android:textColor="@color/on_dark"
+        android:textSize="27sp"
+        android:letterSpacing="-0.01"
+        android:fontFamily="sans-serif-black" />
 
     <TextView
         android:id="@+id/detailBlurb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:textColor="@color/ink_soft"
-        android:textSize="14sp" />
+        android:layout_marginTop="3dp"
+        android:textColor="@color/mint_deep"
+        android:textSize="13sp"
+        android:letterSpacing="0.05" />
 
-    <com.glasscrane.flannery.ui.FlanneryView
-        android:id="@+id/stage"
+    <FrameLayout
+        android:id="@+id/stageMount"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_margin="18dp" />
+        android:layout_marginStart="26dp"
+        android:layout_marginEnd="26dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginBottom="6dp"
+        android:background="@drawable/bg_paper_card"
+        android:paddingStart="9dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="9dp"
+        android:paddingBottom="13dp">
+
+        <com.glasscrane.flannery.ui.FlanneryView
+            android:id="@+id/stage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_paper_tile"
+            android:alpha="0.5" />
+    </FrameLayout>
 
     <ProgressBar
         android:id="@+id/progress"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="220dp"
-        android:layout_height="wrap_content"
+        android:layout_width="200dp"
+        android:layout_height="6dp"
+        android:layout_marginTop="10dp"
         android:max="100"
+        android:progressDrawable="@drawable/progress_mint"
         android:visibility="invisible" />
 
     <TextView
         android:id="@+id/progressLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="5dp"
         android:text="@string/making_gif"
-        android:textColor="@color/ink_soft"
-        android:textSize="13sp"
+        android:textColor="@color/on_dark_soft"
+        android:textSize="12sp"
+        android:letterSpacing="0.05"
         android:visibility="invisible" />
 
     <LinearLayout
@@ -54,29 +95,31 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="14dp"
-        android:layout_marginBottom="28dp">
+        android:layout_marginBottom="30dp">
 
         <Button
             android:id="@+id/saveBtn"
             android:layout_width="wrap_content"
-            android:layout_height="52dp"
-            android:minWidth="110dp"
+            android:layout_height="54dp"
+            android:minWidth="112dp"
             android:background="@drawable/bg_btn_ghost"
             android:text="@string/save_gif"
             android:textAllCaps="false"
-            android:textColor="@color/sage_deep"
-            android:textStyle="bold" />
+            android:textColor="@color/mint"
+            android:textSize="15sp"
+            android:fontFamily="sans-serif-black" />
 
         <Button
             android:id="@+id/shareBtn"
             android:layout_width="wrap_content"
-            android:layout_height="52dp"
-            android:layout_marginStart="12dp"
-            android:minWidth="150dp"
+            android:layout_height="54dp"
+            android:layout_marginStart="14dp"
+            android:minWidth="158dp"
             android:background="@drawable/bg_btn_primary"
             android:text="@string/share_gif"
             android:textAllCaps="false"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold" />
+            android:textColor="@color/mint_ink"
+            android:textSize="15sp"
+            android:fontFamily="sans-serif-black" />
     </LinearLayout>
 </LinearLayout>

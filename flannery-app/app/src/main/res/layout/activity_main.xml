@@ -3,27 +3,58 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/cream"
+    android:background="@drawable/bg_ground"
     android:fitsSystemWindows="true">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="18dp"
-        android:text="@string/app_name"
-        android:textColor="@color/ink"
-        android:textSize="34sp"
-        android:textStyle="bold" />
+        android:orientation="horizontal"
+        android:gravity="bottom"
+        android:paddingStart="22dp"
+        android:paddingEnd="22dp"
+        android:paddingTop="22dp"
+        android:paddingBottom="14dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="21dp"
-        android:layout_marginBottom="10dp"
-        android:text="@string/tagline"
-        android:textColor="@color/ink_soft"
-        android:textSize="14sp" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textColor="@color/mint"
+                android:textSize="36sp"
+                android:letterSpacing="-0.02"
+                android:fontFamily="sans-serif-black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="@string/tagline"
+                android:textColor="@color/on_dark_soft"
+                android:textSize="13sp"
+                android:letterSpacing="0.04" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/countChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:textColor="@color/mint_deep"
+            android:textSize="11sp"
+            android:letterSpacing="0.08"
+            android:fontFamily="sans-serif-medium" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/grid"
@@ -33,6 +64,6 @@
         android:clipToPadding="false"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
-        android:paddingBottom="24dp"
+        android:paddingBottom="28dp"
         android:scrollbars="none" />
 </LinearLayout>
