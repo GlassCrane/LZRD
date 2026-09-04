@@ -79,6 +79,13 @@ cd flannery-app
 ./gradlew assembleDebug
 ```
 
+### Pre-rendered GIFs
+
+The full 8-bit set ships in the repo at [`gifs/8bit/`](gifs/8bit/) —
+48 transparent looping GIFs named `flannery-8bit-<id>.gif`, exactly what the
+app exports. (The fuzzy set is render-on-demand only; it is ~42 MB and lives
+in the app.)
+
 ### 8-bit mode
 
 The app opens in 8-bit; a header toggle swaps every animation to the fuzzy
