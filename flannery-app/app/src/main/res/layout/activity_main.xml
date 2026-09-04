@@ -44,6 +44,25 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/modeChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_chip_toggle"
+            android:paddingStart="11dp"
+            android:paddingEnd="11dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:textColor="@color/chip_toggle_text"
+            android:textSize="11sp"
+            android:letterSpacing="0.10"
+            android:fontFamily="monospace"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <TextView
             android:id="@+id/countChip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

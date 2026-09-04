@@ -354,4 +354,63 @@ object Props {
         }
         st.circle(x, y, r, 0xFFFFD75E.toInt())
     }
+
+    fun balloon(st: Stage, x: Float, y: Float, r: Float, color: Int) {
+        // string first, so the balloon covers its anchor
+        val pt = st.stroke(withAlpha(Hue.INK, 0.65f), r * 0.06f)
+        st.path.reset()
+        st.path.moveTo(x, y + r * 1.05f)
+        st.path.quadTo(x + r * 0.25f, y + r * 1.9f, x, y + r * 2.6f)
+        st.canvas.drawPath(st.path, pt)
+        st.oval(x, y, r * 0.82f, r, color)
+        st.path.reset()
+        st.path.moveTo(x - r * 0.12f, y + r * 0.98f)
+        st.path.lineTo(x + r * 0.12f, y + r * 0.98f)
+        st.path.lineTo(x, y + r * 1.16f)
+        st.path.close()
+        st.canvas.drawPath(st.path, st.fill(color))
+        st.oval(x - r * 0.28f, y - r * 0.34f, r * 0.20f, r * 0.28f, withAlpha(Hue.WHITE, 0.65f))
+    }
+
+    fun butterfly(st: Stage, x: Float, y: Float, r: Float, flap: Float, color: Int) {
+        val c = st.canvas
+        val spread = 0.35f + 0.65f * flap
+        for (side in intArrayOf(-1, 1)) {
+            c.save()
+            c.translate(x, y)
+            c.scale(side * spread, 1f)
+            st.oval(r * 0.55f, -r * 0.35f, r * 0.52f, r * 0.42f, color)
+            st.oval(r * 0.45f, r * 0.35f, r * 0.40f, r * 0.34f, withAlpha(color, 0.85f))
+            c.restore()
+        }
+        st.oval(x, y, r * 0.13f, r * 0.5f, Hue.INK)
+    }
+
+    fun envelope(st: Stage, x: Float, y: Float, w: Float, open: Float) {
+        val h = w * 0.68f
+        st.rect.set(x - w / 2, y - h / 2, x + w / 2, y + h / 2)
+        st.canvas.drawRoundRect(st.rect, w * 0.06f, w * 0.06f, st.fill(Hue.CREAM))
+        st.canvas.drawRoundRect(st.rect, w * 0.06f, w * 0.06f,
+            st.stroke(withAlpha(Hue.INK, 0.55f), w * 0.035f))
+        val p = st.path
+        p.reset()
+        p.moveTo(x - w / 2, y - h / 2)
+        p.lineTo(x, y - h / 2 + h * 0.55f * (1f - open))
+        p.lineTo(x + w / 2, y - h / 2)
+        st.canvas.drawPath(p, st.stroke(withAlpha(Hue.INK, 0.55f), w * 0.035f))
+        heart(st, x, y + h * 0.06f, w * 0.16f, Hue.PINK)
+    }
+
+    fun sprout(st: Stage, x: Float, y: Float, r: Float, grow: Float) {
+        if (grow <= 0f) return
+        val g = ease(grow)
+        val stem = st.stroke(0xFF5FA463.toInt(), r * 0.16f)
+        st.path.reset()
+        st.path.moveTo(x, y)
+        st.path.quadTo(x + r * 0.12f, y - r * 0.6f * g, x, y - r * 1.1f * g)
+        st.canvas.drawPath(st.path, stem)
+        val ly = y - r * 1.05f * g
+        leaf(st, x - r * 0.42f * g, ly, r * 0.42f * g, -28f, 0xFF7CC97F.toInt())
+        leaf(st, x + r * 0.42f * g, ly, r * 0.42f * g, 208f, 0xFF7CC97F.toInt())
+    }
 }

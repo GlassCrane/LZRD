@@ -869,6 +869,144 @@ object Animations {
                     st.h * 0.9f - st.h * 0.8f * nt, st.u * 0.05f,
                     withAlpha(colors[i % 4], clamp01(1.4f * (1f - nt))))
             }
+        },
+
+        // ---- 41-48: encore ---------------------------------------------------
+
+        // 41
+        AnimSpec("jelly", "Jelly Wobble", "structurally unsound", 30, 22) { st, t ->
+            val p = base(st)
+            p.sx = 1f + 0.10f * sin(t * TAU * 3f)
+            p.sy = 1f - 0.10f * sin(t * TAU * 3f + 0.9f)
+            p.rot = 2.5f * sin(t * TAU * 2f)
+            p.eyes = Eyes.WIDE
+            Flannery.draw(st, p)
+        },
+
+        // 42
+        AnimSpec("moonwalk", "Moonwalk", "smooth operator", 36, 20) { st, t ->
+            val p = base(st)
+            p.cx = st.w * (0.72f - 0.44f * t)
+            p.rot = -4f
+            p.cy += st.u * 0.012f * kotlin.math.abs(sin(t * TAU * 4f))
+            p.gazeX = 0.8f
+            for (i in 0 until 4) {
+                Props.speedLine(st, p.cx + st.u * (0.22f + 0.05f * i),
+                    p.cy - st.u * 0.10f + st.u * 0.08f * i, st.u * 0.13f, st.u * 0.011f,
+                    0.9f - i * 0.18f)
+            }
+            Flannery.draw(st, p)
+        },
+
+        // 43
+        AnimSpec("balloonride", "Balloon Ride", "up and away", 36, 18) { st, t ->
+            val p = base(st)
+            val drift = sin(t * TAU)
+            p.cy = st.h * (0.60f - 0.10f * sin(t * TAU))
+            p.cx += st.u * 0.03f * sin(t * TAU * 2f)
+            p.rot = 3f * drift
+            p.eyes = Eyes.HAPPY
+            Props.balloon(st, p.cx + st.u * 0.04f * drift, p.cy - st.u * 0.52f,
+                st.u * 0.115f, Hue.PINK)
+            Flannery.draw(st, p)
+        },
+
+        // 44
+        AnimSpec("butterfly", "Butterfly Friend", "gentle visitor", 44, 18) { st, t ->
+            val p = base(st)
+            val a = t * TAU
+            val bx = p.cx + cos(a) * st.u * 0.30f
+            val by = p.cy - st.u * 0.30f + sin(a * 2f) * st.u * 0.10f
+            p.gazeX = ((bx - p.cx) / (st.u * 0.30f)).coerceIn(-1f, 1f)
+            p.gazeY = -0.5f
+            val land = window(t, 0.62f, 0.86f)
+            Flannery.draw(st, p)
+            if (land > 0f) {
+                // settles on his head for a moment
+                Props.butterfly(st, p.cx + st.u * 0.02f, p.cy - st.u * 0.34f,
+                    st.u * 0.055f, 0.25f + 0.2f * sin(t * 40f), 0xFFF6A9C4.toInt())
+            } else {
+                Props.butterfly(st, bx, by, st.u * 0.055f,
+                    0.5f + 0.5f * sin(t * TAU * 10f), 0xFFF6A9C4.toInt())
+            }
+        },
+
+        // 45
+        AnimSpec("cookierain", "Cookie Rain", "best weather", 36, 20) { st, t ->
+            val p = base(st)
+            p.eyes = Eyes.STAR
+            p.gazeY = -0.8f
+            p.cy += st.u * 0.015f * sin(t * TAU * 2f)
+            for (i in 0 until 8) {
+                val ct = (t + rnd(i)) % 1f
+                Props.cookie(st, st.w * (0.08f + 0.84f * rnd(i * 7)),
+                    -st.u * 0.08f + (st.h + st.u * 0.16f) * ct,
+                    st.u * (0.030f + 0.020f * rnd(i * 3)), 0f)
+            }
+            Flannery.draw(st, p)
+        },
+
+        // 46
+        AnimSpec("loveletter", "Love Letter", "for you", 40, 18) { st, t ->
+            val p = base(st)
+            val open = ease(window(t, 0.30f, 0.55f))
+            val hearts = window(t, 0.50f, 1.00f)
+            p.eyes = if (t > 0.55f) Eyes.HEART else Eyes.OPEN
+            p.gazeY = -0.7f
+            p.blush = 0.5f + 0.5f * open
+            Flannery.draw(st, p)
+            Props.envelope(st, st.w * 0.5f, st.h * 0.22f, st.u * 0.19f, open)
+            if (hearts > 0f) {
+                for (i in 0 until 5) {
+                    val ht = (hearts * 1.4f + i / 5f) % 1f
+                    Props.heart(st, st.w * 0.5f + st.u * 0.16f * sin(ht * 5f + i),
+                        st.h * 0.26f + st.u * 0.30f * ht, st.u * 0.028f,
+                        withAlpha(Hue.PINK, clamp01(1.6f * (1f - ht))))
+                }
+            }
+        },
+
+        // 47
+        AnimSpec("sprout", "Lil Sprout", "he grew this himself", 40, 16) { st, t ->
+            val p = base(st)
+            val grow = clamp01(t * 1.6f)
+            p.sy = 1f + 0.02f * sin(t * TAU)
+            p.eyes = if (t > 0.75f) Eyes.HAPPY else Eyes.OPEN
+            p.gazeY = -0.9f
+            p.attach = { s, hw, hh -> Props.sprout(s, 0f, -hh * 0.92f, hw * 0.34f, grow) }
+            Flannery.draw(st, p)
+            val shine = window(t, 0.80f, 1.00f)
+            if (shine > 0f) {
+                Props.sparkle(st, p.cx + st.u * 0.16f, p.cy - st.u * 0.46f,
+                    st.u * 0.030f * pulse(shine), withAlpha(Hue.GOLD, pulse(shine)))
+            }
+        },
+
+        // 48
+        AnimSpec("tada", "Ta-Da!", "the big finish", 36, 20) { st, t ->
+            val p = base(st)
+            val pop = window(t, 0.18f, 0.40f)
+            val hold = window(t, 0.40f, 0.85f)
+            if (pop > 0f) {
+                p.cy -= st.u * 0.10f * pulse(pop)
+                p.sy = 1f + 0.08f * pulse(pop)
+            }
+            p.eyes = if (hold > 0f || pop > 0.5f) Eyes.HAPPY else Eyes.OPEN
+            p.rot = if (hold > 0f) 3f * sin(hold * TAU * 2f) else 0f
+            val colors = intArrayOf(Hue.PINK, Hue.GOLD, 0xFF8FD8FF.toInt(), 0xFFA98CFF.toInt())
+            if (t > 0.22f) {
+                for (i in 0 until 14) {
+                    val ct = clamp01((t - 0.22f) * 1.3f + rnd(i) * 0.1f)
+                    val side = if (i % 2 == 0) -1f else 1f
+                    val a = side * (0.5f + 0.9f * rnd(i * 3))
+                    val d = st.u * (0.15f + 0.55f * ease(ct))
+                    Props.confetti(st, st.w * 0.5f + sin(a) * d,
+                        st.h * 0.62f - cos(a * 0.6f) * d + st.u * 0.30f * ct * ct,
+                        st.u * 0.036f, ct * 640f + i * 31f,
+                        withAlpha(colors[i % 4], clamp01(1.6f * (1f - ct))))
+                }
+            }
+            Flannery.draw(st, p)
         }
 
     )
@@ -881,6 +1019,7 @@ object Animations {
         "Full of Beans" to listOf("bounce", "wiggle", "zoomies", "roll", "trampoline", "dance", "disco", "zap"),
         "Soft Feelings" to listOf("love", "hug", "heartbeat", "boop", "sparkle", "starstruck", "rarf", "boo"),
         "Weather Permitting" to listOf("rain", "snow", "windy", "sunbathe", "rainbow", "snowball", "puddle", "stars"),
-        "Party Tricks" to listOf("party", "birthday", "fireworks", "rocket", "flame", "bubbles", "peekaboo", "levitate")
+        "Party Tricks" to listOf("party", "birthday", "fireworks", "rocket", "flame", "bubbles", "peekaboo", "levitate"),
+        "Encore" to listOf("jelly", "moonwalk", "balloonride", "butterfly", "cookierain", "loveletter", "sprout", "tada")
     )
 }

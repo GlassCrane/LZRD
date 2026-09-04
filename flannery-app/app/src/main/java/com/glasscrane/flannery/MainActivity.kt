@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.glasscrane.flannery.anim.AnimSpec
 import com.glasscrane.flannery.anim.Animations
+import com.glasscrane.flannery.art.Sprite
+import com.glasscrane.flannery.art.ensureSprite
 import com.glasscrane.flannery.ui.FlanneryView
 
 class MainActivity : AppCompatActivity() {
@@ -24,9 +26,25 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        ensureSprite(this)
 
         findViewById<TextView>(R.id.countChip).text =
             getString(R.string.count_label, Animations.all.size).uppercase()
+
+        val prefs = getSharedPreferences("flannery", MODE_PRIVATE)
+        Sprite.pixelMode = prefs.getBoolean("pixel_mode", false)
+        val modeChip = findViewById<TextView>(R.id.modeChip)
+        fun renderMode() {
+            modeChip.text = if (Sprite.pixelMode) "8-BIT" else "PLUSH"
+            modeChip.isSelected = Sprite.pixelMode
+        }
+        renderMode()
+        modeChip.setOnClickListener {
+            // the live previews redraw every frame, so the whole grid flips at once
+            Sprite.pixelMode = !Sprite.pixelMode
+            prefs.edit().putBoolean("pixel_mode", Sprite.pixelMode).apply()
+            renderMode()
+        }
 
         val rows = buildList {
             for ((title, ids) in Animations.sections) {

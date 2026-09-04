@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.provider.MediaStore
+import com.glasscrane.flannery.art.Sprite
 import androidx.core.content.FileProvider
 import java.io.File
 
@@ -15,13 +16,14 @@ object Sharer {
      * never reused. v1 files were produced by an encoder with a broken LZW code
      * width and would not render anywhere.
      */
-    private const val ENCODER_VERSION = 3
+    private const val ENCODER_VERSION = 4
 
     fun cacheFileFor(ctx: Context, id: String): File {
         val dir = File(ctx.cacheDir, "shared").apply { mkdirs() }
         val suffix = "_v$ENCODER_VERSION.gif"
         dir.listFiles()?.forEach { if (!it.name.endsWith(suffix)) it.delete() }
-        return File(dir, "flannery_$id$suffix")
+        val mode = if (Sprite.pixelMode) "8bit" else "plush"
+        return File(dir, "flannery_${id}_$mode$suffix")
     }
 
     fun share(ctx: Context, file: File, chooserTitle: String) {

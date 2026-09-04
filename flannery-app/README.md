@@ -1,6 +1,7 @@
 # Flannery
 
-A tiny Android app: forty looping animations of Flannery, each one tap away from
+A tiny Android app: forty-eight looping animations of Flannery, in plush
+and 8-bit flavours,, each one tap away from
 being shared anywhere as a GIF.
 
 ## What's inside
@@ -36,6 +37,8 @@ him in `art/Props.kt`.
 | Windy Day | Sunbathing | Static Shock | Levitate |
 | Fireworks | Birthday | Puddle Splash | Thinking |
 | Heartbeat | Star Struck | Sneeze | Disco |
+| Jelly Wobble | Moonwalk | Balloon Ride | Butterfly Friend |
+| Cookie Rain | Love Letter | Lil Sprout | Ta-Da! |
 
 ### Sharing
 
@@ -75,6 +78,19 @@ Locally, with an Android SDK installed:
 cd flannery-app
 ./gradlew assembleDebug
 ```
+
+### 8-bit mode
+
+A toggle in the header swaps every animation to a pixel-art Flannery. His
+sprite was lifted from pixel art by detecting the drawing's own 12.3px grid
+and snapping to it — one sample per true pixel — then separating him from a
+white-and-checkerboard background by flood-filling with his navy outline as
+the barrier (the checkerboard has near-black squares, so brightness alone
+cannot tell background from outline; blue-minus-red can). The result is his
+exact 65x61 pixels, shipped pre-upscaled 8x nearest-neighbour so edges stay
+crisp. Face positions, expression patch colours and ink are measured per
+sprite; the plush and pixel Flannery hold their faces in different places.
+Flat colours compress far better than fur: 8-bit GIFs land around 260 KB.
 
 ### Look
 

@@ -65,19 +65,27 @@ object Hue {
 enum class Eyes { OPEN, BLINK, HAPPY, SLEEPY, WIDE, HEART, STAR, DIZZY }
 enum class Brows { NONE, ANGRY, SAD, RAISED }
 
-/** The artwork itself. Loaded once and handed to the renderer. */
-object Sprite {
-    var bmp: Bitmap? = null
+/** One drawable Flannery: his bitmap plus where his face sits inside it. */
+class SpriteSheet(
+    val bmp: Bitmap,
+    val eyeLx: Float, val eyeLy: Float,
+    val eyeRx: Float, val eyeRy: Float,
+    /** Eye radius as a fraction of sprite width. */
+    val eyeR: Float,
+    /** Fur immediately around each eye — used to hide it before redrawing. */
+    val furEyeL: Int, val furEyeR: Int,
+    /** The colour his own features are drawn in; overlays match it. */
+    val ink: Int,
+    /** Bilinear for the plush photo; nearest-neighbour keeps pixels crisp. */
+    val filter: Boolean
+)
 
-    // Where his face sits inside the square sprite, measured off the artwork.
-    const val EYE_LX = 0.3391f
-    const val EYE_LY = 0.3642f
-    const val EYE_RX = 0.6529f
-    const val EYE_RY = 0.3693f
-    const val EYE_R = 0.040f
-    const val MOUTH_X = 0.5339f
-    const val MOUTH_Y = 0.4120f
-    const val MOUTH_W = 0.092f
+/** Both versions of him, and which one is active. */
+object Sprite {
+    var classic: SpriteSheet? = null
+    var pixel: SpriteSheet? = null
+    var pixelMode = false
+    val current: SpriteSheet? get() = if (pixelMode) pixel else classic
 }
 
 class Pose {
@@ -143,7 +151,7 @@ class Stage(var canvas: Canvas, var w: Float, var h: Float) {
 object Flannery {
 
     fun draw(st: Stage, p: Pose) {
-        val bmp = Sprite.bmp ?: return
+        val sheet = Sprite.current ?: return
         val c = st.canvas
         val half = p.size * 0.5f
 
@@ -153,11 +161,12 @@ object Flannery {
         if (p.sx != 1f || p.sy != 1f) c.scale(p.sx, p.sy)
 
         st.rect.set(-half, -half, half, half)
-        c.drawBitmap(bmp, null, st.rect, st.bmpPaint)
+        st.bmpPaint.isFilterBitmap = sheet.filter
+        c.drawBitmap(sheet.bmp, null, st.rect, st.bmpPaint)
 
         val s = p.size
-        drawEyes(st, p, s)
-        drawBrows(st, p, s)
+        drawEyes(st, p, sheet, s)
+        drawBrows(st, p, sheet, s)
 
         if (p.blush > 0.01f) {
             val ba = 0.30f * p.blush
@@ -183,11 +192,11 @@ object Flannery {
     }
 
     /** Eyebrows are new marks on fur, so they draw straight over the artwork. */
-    private fun drawBrows(st: Stage, p: Pose, s: Float) {
+    private fun drawBrows(st: Stage, p: Pose, sheet: SpriteSheet, s: Float) {
         if (p.brows == Brows.NONE) return
-        val r = Sprite.EYE_R * s
-        val xs = floatArrayOf(lx(Sprite.EYE_LX, s), lx(Sprite.EYE_RX, s))
-        val ys = floatArrayOf(ly(Sprite.EYE_LY, s), ly(Sprite.EYE_RY, s))
+        val r = sheet.eyeR * s
+        val xs = floatArrayOf(lx(sheet.eyeLx, s), lx(sheet.eyeRx, s))
+        val ys = floatArrayOf(ly(sheet.eyeLy, s), ly(sheet.eyeRy, s))
         for (i in 0..1) {
             val bx = xs[i]
             val by = ys[i] - r * 1.70f
@@ -208,19 +217,19 @@ object Flannery {
                 }
                 Brows.NONE -> return
             }
-            st.canvas.drawPath(st.path, st.stroke(Hue.INK, r * 0.30f))
+            st.canvas.drawPath(st.path, st.stroke(sheet.ink, r * 0.30f))
         }
     }
 
-    private fun drawEyes(st: Stage, p: Pose, s: Float) {
+    private fun drawEyes(st: Stage, p: Pose, sheet: SpriteSheet, s: Float) {
         if (p.eyes == Eyes.OPEN && p.gazeX == 0f && p.gazeY == 0f) return
 
-        val r = Sprite.EYE_R * s
+        val r = sheet.eyeR * s
         val gx = p.gazeX * r * 0.30f
         val gy = p.gazeY * r * 0.30f
-        val xs = floatArrayOf(lx(Sprite.EYE_LX, s), lx(Sprite.EYE_RX, s))
-        val ys = floatArrayOf(ly(Sprite.EYE_LY, s), ly(Sprite.EYE_RY, s))
-        val furs = intArrayOf(Hue.FUR_EYE_L, Hue.FUR_EYE_R)
+        val xs = floatArrayOf(lx(sheet.eyeLx, s), lx(sheet.eyeRx, s))
+        val ys = floatArrayOf(ly(sheet.eyeLy, s), ly(sheet.eyeRy, s))
+        val furs = intArrayOf(sheet.furEyeL, sheet.furEyeR)
 
         for (i in 0..1) {
             val bx = xs[i]
@@ -230,32 +239,32 @@ object Flannery {
                 Eyes.OPEN -> {
                     // gaze: cover the painted eye and redraw it shifted
                     patch(st, bx, by, r * 1.30f, fur)
-                    st.oval(bx + gx, by + gy, r * 0.92f, r, Hue.INK)
+                    st.oval(bx + gx, by + gy, r * 0.92f, r, sheet.ink)
                 }
                 Eyes.WIDE -> {
                     patch(st, bx, by, r * 1.35f, fur)
-                    st.oval(bx + gx, by + gy, r * 1.16f, r * 1.26f, Hue.INK)
+                    st.oval(bx + gx, by + gy, r * 1.16f, r * 1.26f, sheet.ink)
                 }
                 Eyes.BLINK -> {
                     patch(st, bx, by, r * 1.35f, fur)
                     st.path.reset()
                     st.path.moveTo(bx - r * 1.05f, by - r * 0.10f)
                     st.path.quadTo(bx, by + r * 0.62f, bx + r * 1.05f, by - r * 0.10f)
-                    st.canvas.drawPath(st.path, st.stroke(Hue.INK, r * 0.34f))
+                    st.canvas.drawPath(st.path, st.stroke(sheet.ink, r * 0.34f))
                 }
                 Eyes.HAPPY -> {
                     patch(st, bx, by, r * 1.35f, fur)
                     st.path.reset()
                     st.path.moveTo(bx - r * 1.05f, by + r * 0.40f)
                     st.path.quadTo(bx, by - r * 0.86f, bx + r * 1.05f, by + r * 0.40f)
-                    st.canvas.drawPath(st.path, st.stroke(Hue.INK, r * 0.34f))
+                    st.canvas.drawPath(st.path, st.stroke(sheet.ink, r * 0.34f))
                 }
                 Eyes.SLEEPY -> {
                     patch(st, bx, by, r * 1.35f, fur)
                     st.path.reset()
                     st.path.moveTo(bx - r * 1.05f, by)
                     st.path.quadTo(bx, by + r * 0.78f, bx + r * 1.05f, by)
-                    st.canvas.drawPath(st.path, st.stroke(Hue.INK, r * 0.32f))
+                    st.canvas.drawPath(st.path, st.stroke(sheet.ink, r * 0.32f))
                 }
                 Eyes.HEART -> {
                     patch(st, bx, by, r * 1.35f, fur)
@@ -267,7 +276,7 @@ object Flannery {
                 }
                 Eyes.DIZZY -> {
                     patch(st, bx, by, r * 1.35f, fur)
-                    val pt = st.stroke(Hue.INK, r * 0.26f)
+                    val pt = st.stroke(sheet.ink, r * 0.26f)
                     st.path.reset()
                     var a = 0f
                     var rad = r * 0.13f
