@@ -81,7 +81,8 @@ cd flannery-app
 
 ### 8-bit mode
 
-A toggle in the header swaps every animation to a pixel-art Flannery. His
+The app opens in 8-bit; a header toggle swaps every animation to the fuzzy
+plush Flannery and back. His
 sprite was lifted from pixel art by detecting the drawing's own 12.3px grid
 and snapping to it — one sample per true pixel — then separating him from a
 white-and-checkerboard background by flood-filling with his navy outline as

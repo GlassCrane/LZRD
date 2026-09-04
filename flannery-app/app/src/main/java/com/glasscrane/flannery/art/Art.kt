@@ -80,11 +80,11 @@ class SpriteSheet(
     val filter: Boolean
 )
 
-/** Both versions of him, and which one is active. */
+/** Both versions of him, and which one is active. 8-bit is the default. */
 object Sprite {
     var classic: SpriteSheet? = null
     var pixel: SpriteSheet? = null
-    var pixelMode = false
+    var pixelMode = true
     val current: SpriteSheet? get() = if (pixelMode) pixel else classic
 }
 

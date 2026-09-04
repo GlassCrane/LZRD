@@ -32,10 +32,10 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.count_label, Animations.all.size).uppercase()
 
         val prefs = getSharedPreferences("flannery", MODE_PRIVATE)
-        Sprite.pixelMode = prefs.getBoolean("pixel_mode", false)
+        Sprite.pixelMode = prefs.getBoolean("pixel_mode", true)
         val modeChip = findViewById<TextView>(R.id.modeChip)
         fun renderMode() {
-            modeChip.text = if (Sprite.pixelMode) "8-BIT" else "PLUSH"
+            modeChip.text = if (Sprite.pixelMode) "8-BIT" else "FUZZY"
             modeChip.isSelected = Sprite.pixelMode
         }
         renderMode()

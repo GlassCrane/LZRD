@@ -22,7 +22,7 @@ object Sharer {
         val dir = File(ctx.cacheDir, "shared").apply { mkdirs() }
         val suffix = "_v$ENCODER_VERSION.gif"
         dir.listFiles()?.forEach { if (!it.name.endsWith(suffix)) it.delete() }
-        val mode = if (Sprite.pixelMode) "8bit" else "plush"
+        val mode = if (Sprite.pixelMode) "8bit" else "fuzzy"
         return File(dir, "flannery_${id}_$mode$suffix")
     }
 
